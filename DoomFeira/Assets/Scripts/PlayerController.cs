@@ -2,61 +2,125 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    // Variáveis de Movimento
     public float moveSpeed = 5f;
     public float rotationSpeed = 100f;
-
-    // Variáveis de Tiro
-    public float shootDistance = 100f; // Distância máxima do tiro
+    public float shootDistance = 100f;
     private Camera playerCamera;
+    public LayerMask shootableMask; // Adicione esta linha
+
+    // --- Variáveis de Stats e HUD ---
+    [Header("Player Stats")]
+    public int maxHealth = 100;
+    public int currentHealth;
+    public int maxArmor = 100;
+    public int currentArmor;
+
+    [Header("HUD")]
+    public HUDManager hudManager; // Referência para o nosso script da HUD
 
     void Start()
     {
-        // Pega a referência da câmera que está filha do jogador
         playerCamera = GetComponentInChildren<Camera>();
-
-        // Trava e esconde o cursor do mouse (típico de FPS)
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        currentHealth = maxHealth;
+        currentArmor = 0; // Começa sem armadura
+
+        // Atualiza a HUD pela primeira vez
+        hudManager.UpdateHUD(currentHealth, currentArmor);
     }
+
+    public void TakeDamage(int damage)
+    {
+        // O dano primeiro atinge a armadura
+        int damageToArmor = Mathf.Min(currentArmor, damage);
+        currentArmor -= damageToArmor;
+
+        // O dano restante atinge a vida
+        int remainingDamage = damage - damageToArmor;
+        currentHealth -= remainingDamage;
+
+        // Garante que a vida não fique negativa
+        if (currentHealth < 0)
+        {
+            currentHealth = 0;
+        }
+
+        Debug.Log($"Vida: {currentHealth}, Armadura: {currentArmor}");
+
+        // ATUALIZA A HUD!
+        hudManager.UpdateHUD(currentHealth, currentArmor);
+
+        // Lógica de morte (opcional por enquanto)
+        if (currentHealth <= 0)
+        {
+            Debug.Log("JOGADOR MORREU!");
+            // Aqui você pode reiniciar a fase ou mostrar uma tela de Game Over
+        }
+    }
+
 
     void Update()
     {
-        // --- MOVIMENTO ---
-        // Mover para frente e para trás (Setas Cima/Baixo)
-        float moveVertical = Input.GetAxis("Vertical"); // Usa as configurações padrão de W/S e Cima/Baixo
+        float moveVertical = Input.GetAxis("Vertical");
         transform.Translate(Vector3.forward * moveVertical * moveSpeed * Time.deltaTime);
 
-        // Rotacionar para os lados (Setas Esquerda/Direita)
-        float rotationHorizontal = Input.GetAxis("Horizontal"); // Usa as configurações padrão de A/D e Esquerda/Direita
+        float rotationHorizontal = Input.GetAxis("Horizontal");
         transform.Rotate(Vector3.up * rotationHorizontal * rotationSpeed * Time.deltaTime);
 
-        // --- TIRO ---
-        // Atirar com a tecla Espaço
         if (Input.GetKeyDown(KeyCode.Space))
         {
             Shoot();
         }
-    }
 
-    void Shoot()
-    {
-        // Cria um raio a partir do centro da câmera, para frente
-        RaycastHit hit;
+        // ... seu código antigo do Update() ...
 
-        // Physics.Raycast dispara um "raio laser" invisível.
-        // Se ele atingir algo com um Collider, a função retorna true e as informações do que foi atingido são guardadas em 'hit'.
-        if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.forward, out hit, shootDistance))
+        // --- TESTE DE DANO ---
+        // Aperte 'T' para tomar 10 de dano
+        if (Input.GetKeyDown(KeyCode.T))
         {
-            Debug.Log("Acertei: " + hit.transform.name); // Mostra no console o que foi atingido
+            TakeDamage(10);
+        }
+        // Aperte 'Y' para pegar 25 de armadura
+        if (Input.GetKeyDown(KeyCode.Y))
+        {
+            currentArmor = Mathf.Min(currentArmor + 25, maxArmor);
+            hudManager.UpdateHUD(currentHealth, currentArmor);
 
-            // Verifica se o que atingimos tem o script do Inimigo
-            Enemy enemy = hit.transform.GetComponent<Enemy>();
-            if (enemy != null)
+
+        }
+
+        void Shoot()
+        {
+            // Adicionamos um Debug para saber se a função é chamada
+            Debug.Log("Atirando!");
+
+            RaycastHit hit;
+
+            // Dispara o raio com a máscara
+            if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.forward, out hit, shootDistance, shootableMask))
             {
-                // Se for um inimigo, chama a função para ele morrer
-                enemy.Die();
+                // Se acertar algo, dizemos O QUE e em QUAL CAMADA está
+                Debug.Log("Acertei: " + hit.transform.name + " | Na camada: " + LayerMask.LayerToName(hit.transform.gameObject.layer));
+
+                Enemy enemy = hit.transform.GetComponent<Enemy>();
+                if (enemy != null)
+                {
+                    Debug.Log("É um inimigo! Destruindo...");
+                    enemy.Die();
+                }
+                else
+                {
+                    Debug.Log("Não é um inimigo.");
+                }
+            }
+            else
+            {
+                // Se o raio não acertar NADA (nem inimigo, nem parede, nada)
+                Debug.Log("Não acertei nada na distância do tiro.");
             }
         }
     }
 }
+

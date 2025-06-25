@@ -1,11 +1,57 @@
 using UnityEngine;
+using UnityEngine.AI;
 
 public class Enemy : MonoBehaviour
 {
-    // Esta função será chamada pelo script do jogador quando for atingido
+    private Transform playerTarget;
+    private NavMeshAgent agent;
+
+    [Header("Attack")]
+    public int attackDamage = 15; // Dano que o inimigo causa
+
+    void Start()
+    {
+        agent = GetComponent<NavMeshAgent>();
+        GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
+        if (playerObject != null)
+        {
+            playerTarget = playerObject.transform;
+        }
+    }
+
+    void Update()
+    {
+        if (playerTarget != null)
+        {
+            agent.SetDestination(playerTarget.position);
+        }
+    }
+
+    // Esta é a função que faz o inimigo "sumir"
     public void Die()
     {
-        // A ação mais simples: destruir o objeto do inimigo
+        // Destrói o GameObject ao qual este script está anexado.
         Destroy(gameObject);
+    }
+
+    // Adicione esta função inteira ao script Enemy.cs
+    void OnCollisionEnter(Collision collision)
+    {
+        // Verifica se o objeto que colidimos tem a tag "Player"
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            // Tenta pegar o componente PlayerController do objeto que colidimos
+            PlayerController player = collision.gameObject.GetComponent<PlayerController>();
+
+            // Se encontrou o script do jogador, causa dano a ele
+            if (player != null)
+            {
+                player.TakeDamage(attackDamage);
+            }
+
+            // Depois de atacar, o inimigo se destrói
+            // (Isso evita que um único inimigo cause dano contínuo)
+            Destroy(gameObject);
+        }
     }
 }
