@@ -1,32 +1,34 @@
 using UnityEngine;
-using System.Collections; // Necessário para usar Coroutines
+using System.Collections;
 
 public class EnemySpawner : MonoBehaviour
 {
-    public GameObject enemyPrefab; // O "molde" do inimigo que vamos criar
-    public float spawnRadius = 20f; // O raio do círculo onde os inimigos podem nascer
-    public float spawnInterval = 2f; // Intervalo de tempo entre cada nascimento
+    // Agora é um array para guardar todos os tipos de inimigos
+    public GameObject[] enemyPrefabs;
+    public float spawnRadius = 20f;
+    public float spawnInterval = 2f;
 
     void Start()
     {
-        // Inicia a rotina de spawn
         StartCoroutine(SpawnEnemies());
     }
 
     IEnumerator SpawnEnemies()
     {
-        // Loop infinito para continuar criando inimigos
         while (true)
         {
-            // Espera pelo tempo definido em spawnInterval
             yield return new WaitForSeconds(spawnInterval);
 
-            // Gera uma posição aleatória dentro de um círculo
-            Vector2 randomPointInCircle = Random.insideUnitCircle * spawnRadius;
-            Vector3 spawnPosition = new Vector3(randomPointInCircle.x, 1f, randomPointInCircle.y); // Usamos Y para o eixo Z
+            // 1. Escolhe um inimigo aleatório do array
+            int randomIndex = Random.Range(0, enemyPrefabs.Length);
+            GameObject enemyToSpawn = enemyPrefabs[randomIndex];
 
-            // Cria o inimigo na posição calculada
-            Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
+            // 2. Gera uma posição aleatória
+            Vector2 randomPointInCircle = Random.insideUnitCircle * spawnRadius;
+            Vector3 spawnPosition = new Vector3(randomPointInCircle.x, 1f, randomPointInCircle.y);
+
+            // 3. Cria o inimigo escolhido
+            Instantiate(enemyToSpawn, spawnPosition, Quaternion.identity);
         }
     }
 }

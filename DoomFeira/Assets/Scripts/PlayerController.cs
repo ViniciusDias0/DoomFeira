@@ -1,22 +1,23 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
+    [Header("Movimento e Tiro")]
     public float moveSpeed = 5f;
     public float rotationSpeed = 100f;
     public float shootDistance = 100f;
+    public LayerMask shootableMask;
+
+    [Header("Status do Jogador (usando float)")]
+    public float maxHealth = 100f;
+    public float currentHealth;
+    public float maxArmor = 100f;
+    public float currentArmor;
+
+    [Header("Componentes e HUD")]
+    public HUDManager hudManager;
     private Camera playerCamera;
-    public LayerMask shootableMask; // Adicione esta linha
-
-    // --- Variáveis de Stats e HUD ---
-    [Header("Player Stats")]
-    public int maxHealth = 100;
-    public int currentHealth;
-    public int maxArmor = 100;
-    public int currentArmor;
-
-    [Header("HUD")]
-    public HUDManager hudManager; // Referência para o nosso script da HUD
 
     void Start()
     {
@@ -25,102 +26,159 @@ public class PlayerController : MonoBehaviour
         Cursor.visible = false;
 
         currentHealth = maxHealth;
-        currentArmor = 0; // Começa sem armadura
+        currentArmor = 0f; // Começa sem armadura
 
         // Atualiza a HUD pela primeira vez
-        hudManager.UpdateHUD(currentHealth, currentArmor);
-    }
-
-    public void TakeDamage(int damage)
-    {
-        // O dano primeiro atinge a armadura
-        int damageToArmor = Mathf.Min(currentArmor, damage);
-        currentArmor -= damageToArmor;
-
-        // O dano restante atinge a vida
-        int remainingDamage = damage - damageToArmor;
-        currentHealth -= remainingDamage;
-
-        // Garante que a vida não fique negativa
-        if (currentHealth < 0)
+        if (hudManager != null)
         {
-            currentHealth = 0;
-        }
-
-        Debug.Log($"Vida: {currentHealth}, Armadura: {currentArmor}");
-
-        // ATUALIZA A HUD!
-        hudManager.UpdateHUD(currentHealth, currentArmor);
-
-        // Lógica de morte (opcional por enquanto)
-        if (currentHealth <= 0)
-        {
-            Debug.Log("JOGADOR MORREU!");
-            // Aqui você pode reiniciar a fase ou mostrar uma tela de Game Over
+            hudManager.UpdateHUD((int)currentHealth, (int)currentArmor);
         }
     }
-
 
     void Update()
+    {
+        HandleMovement();
+        HandleShooting();
+        HandleDebugInputs();
+    }
+
+    private void HandleMovement()
     {
         float moveVertical = Input.GetAxis("Vertical");
         transform.Translate(Vector3.forward * moveVertical * moveSpeed * Time.deltaTime);
 
         float rotationHorizontal = Input.GetAxis("Horizontal");
         transform.Rotate(Vector3.up * rotationHorizontal * rotationSpeed * Time.deltaTime);
+    }
 
+    private void HandleShooting()
+    {
         if (Input.GetKeyDown(KeyCode.Space))
         {
             Shoot();
         }
+    }
 
-        // ... seu código antigo do Update() ...
-
-        // --- TESTE DE DANO ---
+    private void HandleDebugInputs()
+    {
         // Aperte 'T' para tomar 10 de dano
         if (Input.GetKeyDown(KeyCode.T))
         {
-            TakeDamage(10);
+            TakeDamage(10f); // Usamos 10f para ser consistente com o tipo float
         }
+
         // Aperte 'Y' para pegar 25 de armadura
         if (Input.GetKeyDown(KeyCode.Y))
         {
-            currentArmor = Mathf.Min(currentArmor + 25, maxArmor);
-            hudManager.UpdateHUD(currentHealth, currentArmor);
+            AddArmor(25f); // Usamos 25f
+        }
+    }
 
+    public void TakeDamage(float damage)
+    {
+        float damageToArmor = Mathf.Min(currentArmor, damage);
+        currentArmor -= damageToArmor;
 
+        float remainingDamage = damage - damageToArmor;
+        currentHealth -= remainingDamage;
+
+        currentHealth = Mathf.Clamp(currentHealth, 0f, maxHealth);
+
+        Debug.Log($"Dano recebido! Vida: {currentHealth}, Armadura: {currentArmor}");
+        UpdateHud();
+
+        if (hudManager != null)
+        {
+            hudManager.UpdateHUD((int)currentHealth, (int)currentArmor);
         }
 
-        void Shoot()
+        if (currentHealth <= 0)
         {
-            // Adicionamos um Debug para saber se a função é chamada
-            Debug.Log("Atirando!");
+            Die();
+        }
+    }
 
-            RaycastHit hit;
+    public bool Heal(float amount)
+    {
+        if (currentHealth >= maxHealth)
+        {
+            return false;
+        }
 
-            // Dispara o raio com a máscara
-            if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.forward, out hit, shootDistance, shootableMask))
+        currentHealth += amount;
+        currentHealth = Mathf.Clamp(currentHealth, 0f, maxHealth);
+        Debug.Log($"Jogador curou {amount} de vida. Vida: {currentHealth}");
+        UpdateHud();
+
+        if (hudManager != null)
+        {
+            hudManager.UpdateHUD((int)currentHealth, (int)currentArmor);
+        }
+
+        return true;
+    }
+
+    public bool AddArmor(float amount)
+    {
+        if (currentArmor >= maxArmor)
+        {
+            return false;
+        }
+
+        currentArmor += amount;
+        currentArmor = Mathf.Clamp(currentArmor, 0f, maxArmor);
+        Debug.Log($"Jogador pegou {amount} de armadura. Armadura: {currentArmor}");
+        UpdateHud();
+
+        if (hudManager != null)
+        {
+            hudManager.UpdateHUD((int)currentHealth, (int)currentArmor);
+        }
+
+        return true;
+    }
+
+    private void Shoot()
+    {
+        RaycastHit hit;
+        if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.forward, out hit, shootDistance, shootableMask))
+        {
+            Enemy meleeEnemy = hit.transform.GetComponent<Enemy>();
+            if (meleeEnemy != null)
             {
-                // Se acertar algo, dizemos O QUE e em QUAL CAMADA está
-                Debug.Log("Acertei: " + hit.transform.name + " | Na camada: " + LayerMask.LayerToName(hit.transform.gameObject.layer));
+                meleeEnemy.Die(); // Mata o inimigo fraco com um tiro
+                return; // Sai da função para não checar o outro tipo
+            }
 
-                Enemy enemy = hit.transform.GetComponent<Enemy>();
-                if (enemy != null)
-                {
-                    Debug.Log("É um inimigo! Destruindo...");
-                    enemy.Die();
-                }
-                else
-                {
-                    Debug.Log("Não é um inimigo.");
-                }
-            }
-            else
+            RangedEnemy rangedEnemy = hit.transform.GetComponent<RangedEnemy>();
+            if (rangedEnemy != null)
             {
-                // Se o raio não acertar NADA (nem inimigo, nem parede, nada)
-                Debug.Log("Não acertei nada na distância do tiro.");
+                // Causa dano a ele. Vamos supor que seu tiro dá 50 de dano.
+                rangedEnemy.TakeDamage(50f);
             }
+
+            Debug.Log("Acertei: " + hit.transform.name);
+            Enemy enemy = hit.transform.GetComponent<Enemy>();
+            if (enemy != null)
+            {
+                enemy.Die();
+            }
+        }
+
+    }
+
+    private void Die()
+    {
+        Debug.Log("GAME OVER! Reiniciando...");
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    // Função central para atualizar o HUD, para não repetir código
+    private void UpdateHud()
+    {
+        if (hudManager != null)
+        {
+            hudManager.UpdateHUD((int)currentHealth, (int)currentArmor);
         }
     }
 }
-
