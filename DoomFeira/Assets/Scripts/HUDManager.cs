@@ -1,45 +1,40 @@
 using UnityEngine;
-using UnityEngine.UI; // Para o componente Image
-using TMPro; // Para os componentes TextMeshPro
+using UnityEngine.UI; // Necessário para Image
+using TMPro;          // Necessário para TextMeshProUGUI
 
 public class HUDManager : MonoBehaviour
 {
-    // Referências para os elementos da UI que vamos arrastar no Inspector
     [Header("Stats")]
     public TextMeshProUGUI healthText;
     public TextMeshProUGUI armorText;
+    public TextMeshProUGUI ammoText;  // <<-- A variável está aqui
 
     [Header("Face")]
     public Image faceImage;
-    public Sprite[] faceSprites; // Array para guardar as 5 imagens do rosto
+    public Sprite[] faceSprites;
 
-    // Função pública que o jogador vai chamar para atualizar tudo
-    public void UpdateHUD(int health, int armor)
+    // Função para atualizar vida e armadura
+    public void UpdateStatus(int health, int armor)
     {
-        // Atualiza os textos
-        healthText.text = $"{health}%";
-        armorText.text = $"{armor}%";
+        if (healthText != null) healthText.text = $"{health}%";
+        if (armorText != null) armorText.text = $"{armor}%";
 
-        // Lógica para mudar o rosto
-        if (health > 80)
+        if (faceImage == null || faceSprites.Length < 5) return;
+
+        // Lógica do rosto
+        if (health > 80) faceImage.sprite = faceSprites[0];
+        else if (health > 60) faceImage.sprite = faceSprites[1];
+        else if (health > 40) faceImage.sprite = faceSprites[2];
+        else if (health > 20) faceImage.sprite = faceSprites[3];
+        else faceImage.sprite = faceSprites[4];
+    }
+
+    // Função para atualizar a munição
+    public void UpdateAmmo(int currentAmmo, int maxAmmo)
+    {
+        if (ammoText != null)
         {
-            faceImage.sprite = faceSprites[0]; // 100-81% : Saudável
-        }
-        else if (health > 60)
-        {
-            faceImage.sprite = faceSprites[1]; // 80-61% : Aranhado
-        }
-        else if (health > 40)
-        {
-            faceImage.sprite = faceSprites[2]; // 60-41% : Sangrando
-        }
-        else if (health > 20)
-        {
-            faceImage.sprite = faceSprites[3]; // 40-21% : Bem machucado
-        }
-        else
-        {
-            faceImage.sprite = faceSprites[4]; // 20-0% : Quase morrendo
+            ammoText.text = $"{currentAmmo} / {maxAmmo}";
         }
     }
 }
