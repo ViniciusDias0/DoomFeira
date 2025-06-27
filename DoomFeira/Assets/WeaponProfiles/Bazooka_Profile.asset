@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7196a990be121c647ab4edff266ef688, type: 3}
+  m_Name: Bazooka_Profile
+  m_EditorClassIdentifier: 
+  weaponName: Bazooka
+  weaponSprite: {fileID: -2026535004, guid: e1d0573c9cf664748bcabdfdd1dece51, type: 3}
+  damagePerShot: 500
+  fireRate: 0.5
+  projectileSpeed: 30
+  projectilesPerShot: 1
+  spreadAngle: 0
+  maxAmmo: 4
+  startingAmmo: 4
+  projectilePrefab: {fileID: 3485942960392533794, guid: 9def71deac69a1347bfbca39c4ab47f1, type: 3}

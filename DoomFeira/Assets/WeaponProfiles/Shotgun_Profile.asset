@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7196a990be121c647ab4edff266ef688, type: 3}
+  m_Name: Shotgun_Profile
+  m_EditorClassIdentifier: 
+  weaponName: Shotgun
+  weaponSprite: {fileID: 1138146663, guid: db5712c42259a37479bb2a640180ba0c, type: 3}
+  damagePerShot: 165
+  fireRate: 2
+  projectileSpeed: 30
+  projectilesPerShot: 1
+  spreadAngle: 0
+  maxAmmo: 100
+  startingAmmo: 100
+  projectilePrefab: {fileID: 3485942960392533794, guid: 61e4ae0ea7bc4ac46860c98e8fb715a3, type: 3}

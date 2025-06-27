@@ -19,6 +19,19 @@ public class PlayerController : MonoBehaviour
     public HUDManager hudManager;
     private Camera playerCamera;
 
+    [Header("Efeitos da Câmera (Head Bob)")]
+    public bool enableHeadBob = true; // Para poder ligar/desligar o efeito facilmente
+    public float bobFrequency = 2.0f; // Quão rápido a cabeça balança (2 balanços por segundo)
+    public float bobHorizontalAmplitude = 0.1f; // O quanto a cabeça move para os lados
+    public float bobVerticalAmplitude = 0.1f; // O quanto a cabeça move para cima e para baixo
+
+    private float walkingTime = 0.0f;
+    private Vector3 cameraDefaultPosition; // Para sabermos a posição original da câmera
+
+    [Header("Equipamento")]
+    public WeaponStats currentWeapon;
+
+
     void Start()
     {
         playerCamera = GetComponentInChildren<Camera>();
@@ -31,8 +44,17 @@ public class PlayerController : MonoBehaviour
         // Atualiza a HUD pela primeira vez
         if (hudManager != null)
         {
-            hudManager.UpdateHUD((int)currentHealth, (int)currentArmor);
+            hudManager.UpdateStatus((int)currentHealth, (int)currentArmor);
         }
+
+        playerCamera = GetComponentInChildren<Camera>(); // Você já deve ter esta linha
+
+        // GUARDA A POSIÇÃO INICIAL DA CÂMERA
+        if (playerCamera != null)
+        {
+            cameraDefaultPosition = playerCamera.transform.localPosition;
+        }
+
     }
 
     void Update()
@@ -40,6 +62,8 @@ public class PlayerController : MonoBehaviour
         HandleMovement();
         HandleShooting();
         HandleDebugInputs();
+
+        HandleHeadBob();
     }
 
     private void HandleMovement()
@@ -53,7 +77,7 @@ public class PlayerController : MonoBehaviour
 
     private void HandleShooting()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKey(KeyCode.Space))
         {
             Shoot();
         }
@@ -89,7 +113,7 @@ public class PlayerController : MonoBehaviour
 
         if (hudManager != null)
         {
-            hudManager.UpdateHUD((int)currentHealth, (int)currentArmor);
+            hudManager.UpdateStatus((int)currentHealth, (int)currentArmor);
         }
 
         if (currentHealth <= 0)
@@ -112,7 +136,7 @@ public class PlayerController : MonoBehaviour
 
         if (hudManager != null)
         {
-            hudManager.UpdateHUD((int)currentHealth, (int)currentArmor);
+            hudManager.UpdateStatus((int)currentHealth, (int)currentArmor);
         }
 
         return true;
@@ -132,7 +156,7 @@ public class PlayerController : MonoBehaviour
 
         if (hudManager != null)
         {
-            hudManager.UpdateHUD((int)currentHealth, (int)currentArmor);
+            hudManager.UpdateStatus((int)currentHealth, (int)currentArmor);
         }
 
         return true;
@@ -140,31 +164,10 @@ public class PlayerController : MonoBehaviour
 
     private void Shoot()
     {
-        RaycastHit hit;
-        if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.forward, out hit, shootDistance, shootableMask))
+        if (currentWeapon != null)
         {
-            Enemy meleeEnemy = hit.transform.GetComponent<Enemy>();
-            if (meleeEnemy != null)
-            {
-                meleeEnemy.Die(); // Mata o inimigo fraco com um tiro
-                return; // Sai da função para não checar o outro tipo
-            }
-
-            RangedEnemy rangedEnemy = hit.transform.GetComponent<RangedEnemy>();
-            if (rangedEnemy != null)
-            {
-                // Causa dano a ele. Vamos supor que seu tiro dá 50 de dano.
-                rangedEnemy.TakeDamage(50f);
-            }
-
-            Debug.Log("Acertei: " + hit.transform.name);
-            Enemy enemy = hit.transform.GetComponent<Enemy>();
-            if (enemy != null)
-            {
-                enemy.Die();
-            }
+            currentWeapon.TryToShoot();
         }
-
     }
 
     private void Die()
@@ -178,7 +181,53 @@ public class PlayerController : MonoBehaviour
     {
         if (hudManager != null)
         {
-            hudManager.UpdateHUD((int)currentHealth, (int)currentArmor);
+            // CORREÇÃO: Usando o novo nome da função
+            hudManager.UpdateStatus((int)currentHealth, (int)currentArmor);
+        }
+    }
+
+    // Adicione esta nova função ao PlayerController.cs
+
+    private void HandleHeadBob()
+    {
+        // Se o efeito estiver desligado, não faz nada
+        if (!enableHeadBob) return;
+
+        // Pega a entrada de movimento horizontal e vertical
+        float horizontalInput = Input.GetAxis("Horizontal");
+        float verticalInput = Input.GetAxis("Vertical");
+
+        if (Mathf.Abs(horizontalInput) > 0.1f || Mathf.Abs(verticalInput) > 0.1f)
+        {
+            // JOGADOR ESTÁ SE MOVENDO
+
+            // Incrementa o tempo de caminhada, que será usado na função de seno
+            walkingTime += Time.deltaTime;
+
+            // Calcula os deslocamentos usando a função Seno para um movimento suave e oscilante
+            float horizontalOffset = Mathf.Cos(walkingTime * bobFrequency) * bobHorizontalAmplitude;
+            float verticalOffset = Mathf.Sin(walkingTime * bobFrequency * 2) * bobVerticalAmplitude; // Multiplicamos por 2 para que o movimento vertical seja mais rápido (passo cima-baixo)
+
+            // Aplica o deslocamento à posição padrão da câmera
+            playerCamera.transform.localPosition = new Vector3(
+                cameraDefaultPosition.x + horizontalOffset,
+                cameraDefaultPosition.y + verticalOffset,
+                cameraDefaultPosition.z
+            );
+        }
+        else
+        {
+            // JOGADOR ESTÁ PARADO
+
+            // Reseta o tempo de caminhada
+            walkingTime = 0;
+
+            // Suaviza o retorno da câmera para a posição padrão usando Lerp
+            playerCamera.transform.localPosition = Vector3.Lerp(
+                playerCamera.transform.localPosition,
+                cameraDefaultPosition,
+                Time.deltaTime * 5f
+            );
         }
     }
 }
