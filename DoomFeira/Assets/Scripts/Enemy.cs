@@ -12,6 +12,8 @@ public class Enemy : MonoBehaviour
     private NavMeshAgent agent;
     private GameManager gameManager; // Adicione para otimizar a busca
 
+    public SpriteAnimator animator;
+
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -26,10 +28,22 @@ public class Enemy : MonoBehaviour
 
     void Update()
     {
-        if (playerTarget != null)
+        if (playerTarget != null && agent.enabled)
         {
             agent.SetDestination(playerTarget.position);
+
+            // Se o inimigo está se movendo, toca a animação "Walk"
+            if (agent.velocity.magnitude > 0.1f)
+            {
+                animator.Play("Walk");
+            }
+            // Se estiver parado, toca a animação "Idle"
+            else
+            {
+                animator.Play("Idle");
+            }
         }
+
     }
 
     void OnCollisionEnter(Collision collision)
@@ -68,6 +82,17 @@ public class Enemy : MonoBehaviour
             GameManager gm = FindObjectOfType<GameManager>();
             if (gm != null) gm.AddScore(pointsValue);
         }
-        Destroy(gameObject);
+        animator.Play("Death");
+
+        // Desativa a lógica para que ele pare no lugar
+        this.enabled = false; // Desativa este próprio script (o Update para)
+        agent.enabled = false;
+        GetComponent<Collider>().enabled = false;
+        GetComponentInChildren<Billboard>().enabled = false; // Para de encarar a câmera
+
+        // ... sua lógica de score ...
+
+        // Destrói o objeto depois de um tempo para dar tempo de ver a animação de morte
+        Destroy(gameObject, 2f);
     }
-}
+}   
