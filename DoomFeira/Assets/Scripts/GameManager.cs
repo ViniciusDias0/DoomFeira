@@ -28,6 +28,11 @@ public class GameManager : MonoBehaviour
         UpdateScoreUI();
     }
 
+    public int GetFinalScore()
+    {
+        return currentScore;
+    }
+
     // Função privada que atualiza o elemento de texto
     private void UpdateScoreUI()
     {
