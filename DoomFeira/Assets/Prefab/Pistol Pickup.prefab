@@ -102,6 +102,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weaponProfile: {fileID: 11400000, guid: 6ec51ec90c9d6e540aac70212317789b, type: 2}
+  rotationSpeed: 60
+  lifetime: 9
 --- !u!65 &1150191334397289045
 BoxCollider:
   m_ObjectHideFlags: 0
