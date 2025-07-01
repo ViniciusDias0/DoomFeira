@@ -174,6 +174,13 @@ public class PlayerController : MonoBehaviour
     {
         Debug.Log("GAME OVER! Reiniciando...");
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+
+        Debug.Log("O jogador morreu! Acionando o sistema de Game Over...");
+        // Em vez de recarregar a cena, nós encontramos o nosso "gatilho" e o acionamos.
+        // É responsabilidade do gatilho pegar a pontuação e carregar a próxima cena.
+        // Se o GameOverTrigger não existir na cena, ele apenas dará um erro no console,
+        // mas não quebrará o PlayerController.
+        //FindObjectOfType<GameOverTrigger>().TriggerGameOver();
     }
 
     // Função central para atualizar o HUD, para não repetir código

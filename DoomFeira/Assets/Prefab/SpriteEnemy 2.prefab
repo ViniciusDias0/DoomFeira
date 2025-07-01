@@ -28,7 +28,7 @@ Transform:
   m_GameObject: {fileID: 959314908138684322}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.026, y: 1.0588, z: 0}
+  m_LocalPosition: {x: 0.035, y: 0.986, z: 0}
   m_LocalScale: {x: 0.25278208, y: 0.24959932, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -116,7 +116,7 @@ MonoBehaviour:
   animationStates:
   - stateName: Idle
     frames:
-    - {fileID: -707602967, guid: 53d9cca289c020a4b88d49c7eca7f4f7, type: 3}
+    - {fileID: 1155394862, guid: 66dcb01bec5102f45a0b780fc0febc9b, type: 3}
     framesPerSecond: 0
   - stateName: Walk
     frames:
@@ -136,11 +136,11 @@ GameObject:
   m_Component:
   - component: {fileID: 1253807394636134902}
   - component: {fileID: 1042401740726152458}
-  - component: {fileID: 7609882362049789182}
-  - component: {fileID: 2661387890736874236}
-  - component: {fileID: 3370685030459908899}
+  - component: {fileID: 5087384656696652736}
+  - component: {fileID: 436207965028193976}
+  - component: {fileID: 8697543208750471380}
   m_Layer: 0
-  m_Name: SpriteEnemyRanged
+  m_Name: SpriteEnemy 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -155,12 +155,11 @@ Transform:
   m_GameObject: {fileID: 6470583162584400145}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -11.071842, y: 0.513, z: -6.9612846}
+  m_LocalPosition: {x: -11.072, y: 0.513, z: -6.9612846}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1292598006554077636}
-  - {fileID: 3184205683144801107}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!195 &1042401740726152458
@@ -172,8 +171,8 @@ NavMeshAgent:
   m_GameObject: {fileID: 6470583162584400145}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.5
-  m_Speed: 3.5
+  m_Radius: 0.8
+  m_Speed: 7
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
@@ -185,7 +184,7 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &7609882362049789182
+--- !u!114 &5087384656696652736
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -194,17 +193,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 6470583162584400145}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3f267f9686d75254e9871ecec08967b3, type: 3}
+  m_Script: {fileID: 11500000, guid: 4a1c940af554f954087dc7d0ed2265ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 150
-  pointsValue: 600
-  stoppingDistance: 10
-  projectilePrefab: {fileID: 3485942960392533794, guid: 2c489896e840a3a4b99b6b9c7e13dce5, type: 3}
-  firePoint: {fileID: 3184205683144801107}
-  fireRate: 2
+  health: 80
+  damage: 20
+  pointsValue: 300
   animator: {fileID: 7316335865921242996}
---- !u!136 &2661387890736874236
+--- !u!136 &436207965028193976
 CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -227,7 +223,7 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 1, z: 0}
---- !u!54 &3370685030459908899
+--- !u!54 &8697543208750471380
 Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -254,34 +250,3 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!1 &9076725486199925182
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 3184205683144801107}
-  m_Layer: 0
-  m_Name: FirePoint
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &3184205683144801107
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9076725486199925182}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.034, y: 1.088, z: 2.049}
-  m_LocalScale: {x: 3.2854, y: 2.9996998, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1253807394636134902}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
