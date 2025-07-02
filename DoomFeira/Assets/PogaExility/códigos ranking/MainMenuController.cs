@@ -4,6 +4,7 @@ using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 using TMPro;
 using System.Text;
+using System.Threading.Tasks;
 
 public class MainMenuController : MonoBehaviour
 {
@@ -13,17 +14,36 @@ public class MainMenuController : MonoBehaviour
     [Header("Configuração de Cenas")]
     public string gameSceneName = "SampleScene";
 
-    async void Start()
+    private void OnEnable()
     {
-        if (FirebaseManager.Instance == null)
+        LoadRanking();
+    }
+
+    // --- O CÓDIGO FOI CORRIGIDO AQUI ---
+    private async void LoadRanking()
+    {
+        // 1. Espera o FirebaseManager existir.
+        while (FirebaseManager.Instance == null)
         {
-            if (rankingText != null) rankingText.text = "ERRO: FIREBASE NÃO INICIADO";
-            return;
+            await Task.Yield(); // Espera um frame
         }
 
+        // 2. [A CORREÇÃO CRÍTICA] Espera a TAREFA de inicialização ser criada.
+        // Isso garante que o Start() do FirebaseManager já rodou.
+        while (FirebaseManager.Instance.InitializationTask == null)
+        {
+            await Task.Yield(); // Espera mais um frame
+        }
+
+        // 3. Agora que sabemos que a tarefa existe, podemos esperá-la terminar.
+        await FirebaseManager.Instance.InitializationTask;
+
+        // O resto do código agora é seguro para ser executado.
         if (rankingText != null) rankingText.text = "CARREGANDO RANKING...";
 
         List<ScoreEntry> topScores = await FirebaseManager.Instance.GetTopScores();
+
+        Debug.Log($"MainMenuController: Foram encontrados {topScores.Count} recordes no Firebase.");
 
         StringBuilder sb = new StringBuilder("--- HALL OF FAME ---\n\n");
         int count = Mathf.Min(topScores.Count, 10);

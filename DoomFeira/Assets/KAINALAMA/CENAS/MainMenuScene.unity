@@ -823,7 +823,7 @@ GameObject:
   - component: {fileID: 1079267158}
   - component: {fileID: 1079267157}
   m_Layer: 5
-  m_Name: Iniciar
+  m_Name: LoadRanking
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

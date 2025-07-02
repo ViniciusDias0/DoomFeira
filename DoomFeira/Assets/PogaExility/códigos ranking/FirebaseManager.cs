@@ -12,8 +12,6 @@ public class FirebaseManager : MonoBehaviour
     public static FirebaseManager Instance;
     private DatabaseReference dbReference;
 
-    // --- ADIÇÃO IMPORTANTE ---
-    // Esta tarefa pública vai nos dizer quando a inicialização estiver completa.
     public Task InitializationTask { get; private set; }
 
     void Awake()
@@ -31,7 +29,6 @@ public class FirebaseManager : MonoBehaviour
 
     void Start()
     {
-        // Atribuímos o processo de inicialização à nossa tarefa pública.
         InitializationTask = FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task => {
             if (task.Exception != null)
             {
@@ -43,12 +40,18 @@ public class FirebaseManager : MonoBehaviour
         });
     }
 
+    // --- A BOA FOI FEITA AQUI ---
     public Task<List<ScoreEntry>> GetTopScores()
     {
-        // Esta checagem de segurança agora é ainda mais robusta.
         if (dbReference == null) return Task.FromResult(new List<ScoreEntry>());
 
-        // A linha do erro era esta. Agora ela só será chamada quando dbReference não for null.
+        // --- INÍCIO DA ADIÇÃO ---
+        // Esta linha diz ao Firebase SDK para garantir que os dados locais
+        // para o caminho "scores" estejam sincronizados com o servidor.
+        // Isso ajuda a evitar que ele retorne dados de um cache antigo.
+        dbReference.Child("scores").KeepSynced(true);
+        // --- FIM DA ADIÇÃO ---
+
         return dbReference.Child("scores").OrderByChild("score").LimitToLast(10).GetValueAsync().ContinueWithOnMainThread(task => {
             if (task.IsFaulted)
             {
