@@ -3,6 +3,9 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "New Weapon Profile", menuName = "FPS/Weapon Profile")]
 public class WeaponProfile : ScriptableObject
 {
+    [Header("Identificação e Visuais")]
+    public GameObject pickupPrefab;
+
     public string weaponName = "New Weapon";
     public Sprite weaponSprite;
     public float damagePerShot = 50f;

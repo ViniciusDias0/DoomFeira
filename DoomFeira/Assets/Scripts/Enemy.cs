@@ -93,6 +93,6 @@ public class Enemy : MonoBehaviour
         // ... sua lógica de score ...
 
         // Destrói o objeto depois de um tempo para dar tempo de ver a animação de morte
-        Destroy(gameObject, 1f);
+        Destroy(gameObject, 2f);
     }
 }   

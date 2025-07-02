@@ -28,8 +28,8 @@ Transform:
   m_GameObject: {fileID: 959314908138684322}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.035, y: 0.986, z: 0}
-  m_LocalScale: {x: 0.25278208, y: 0.24959932, z: 1}
+  m_LocalPosition: {x: 0.01, y: 0.724, z: 0}
+  m_LocalScale: {x: 1.3957131, y: 1.3133168, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1253807394636134902}
@@ -116,16 +116,38 @@ MonoBehaviour:
   animationStates:
   - stateName: Idle
     frames:
-    - {fileID: 1155394862, guid: 66dcb01bec5102f45a0b780fc0febc9b, type: 3}
+    - {fileID: 539007330, guid: f5faaeca78d199945983d8f3eb15a742, type: 3}
     framesPerSecond: 0
+    loop: 1
   - stateName: Walk
     frames:
-    - {fileID: -1748062894, guid: 3f7950d75b8228343af2c6ea7d38c562, type: 3}
+    - {fileID: 539007330, guid: f5faaeca78d199945983d8f3eb15a742, type: 3}
+    - {fileID: -1107262006, guid: 84f6acc9d7293544792b538313e91c52, type: 3}
+    - {fileID: -1862046550, guid: 94f4adbaa119cf24bb2dff38a152950f, type: 3}
+    - {fileID: -1608761531, guid: 03aab44a9d4d5c146b7044d1eb3f8729, type: 3}
     framesPerSecond: 0
+    loop: 1
   - stateName: Death
     frames:
-    - {fileID: -1036584624, guid: 3f7950d75b8228343af2c6ea7d38c562, type: 3}
-    framesPerSecond: 0
+    - {fileID: -446035374, guid: be9d51f4e2bab134084d8259b85f522c, type: 3}
+    - {fileID: -960871203, guid: 75e2e0df3f9f3c9449415b45abd880d7, type: 3}
+    - {fileID: 1945701529, guid: 0cf985272c09d9f40893b1f3912bb3ed, type: 3}
+    - {fileID: 1002270626, guid: 0cf985272c09d9f40893b1f3912bb3ed, type: 3}
+    - {fileID: -260096395, guid: 0cf985272c09d9f40893b1f3912bb3ed, type: 3}
+    - {fileID: -391425825, guid: 0cf985272c09d9f40893b1f3912bb3ed, type: 3}
+    - {fileID: -752282772, guid: 0cf985272c09d9f40893b1f3912bb3ed, type: 3}
+    - {fileID: 300658445, guid: 0cf985272c09d9f40893b1f3912bb3ed, type: 3}
+    - {fileID: -461199343, guid: 0cf985272c09d9f40893b1f3912bb3ed, type: 3}
+    - {fileID: -807060775, guid: 0cf985272c09d9f40893b1f3912bb3ed, type: 3}
+    - {fileID: 694649818, guid: 0cf985272c09d9f40893b1f3912bb3ed, type: 3}
+    - {fileID: -1647774680, guid: 0cf985272c09d9f40893b1f3912bb3ed, type: 3}
+    - {fileID: -324958193, guid: 0cf985272c09d9f40893b1f3912bb3ed, type: 3}
+    - {fileID: -1427019356, guid: 0cf985272c09d9f40893b1f3912bb3ed, type: 3}
+    - {fileID: 1177545851, guid: 0cf985272c09d9f40893b1f3912bb3ed, type: 3}
+    - {fileID: 1008513493, guid: 0cf985272c09d9f40893b1f3912bb3ed, type: 3}
+    - {fileID: 1313764949, guid: 0cf985272c09d9f40893b1f3912bb3ed, type: 3}
+    framesPerSecond: 10
+    loop: 0
 --- !u!1 &6470583162584400145
 GameObject:
   m_ObjectHideFlags: 0
@@ -140,7 +162,7 @@ GameObject:
   - component: {fileID: 436207965028193976}
   - component: {fileID: 8697543208750471380}
   m_Layer: 0
-  m_Name: SpriteEnemy 2
+  m_Name: SpriteEnemy 1
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -172,7 +194,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.8
-  m_Speed: 7
+  m_Speed: 3.5
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120

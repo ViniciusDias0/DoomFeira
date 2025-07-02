@@ -3730,7 +3730,7 @@ Transform:
   m_GameObject: {fileID: 686988472}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.70727104, z: -0, w: 0.7069425}
-  m_LocalPosition: {x: -247.0881, y: -1.5, z: 1.9962}
+  m_LocalPosition: {x: -247.088, y: -1.5, z: 1.9962}
   m_LocalScale: {x: 16.20366, y: 15.051487, z: 117.72383}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -7252,6 +7252,7 @@ MonoBehaviour:
   enemyPrefabs:
   - {fileID: 6470583162584400145, guid: 039abb60e4b0b634aa2fca3833c60615, type: 3}
   - {fileID: 6470583162584400145, guid: 10182caa95ce51d4abb224fbb0a6345c, type: 3}
+  - {fileID: 6470583162584400145, guid: a3d330a4c12925f40bda93fcb173f112, type: 3}
   spawnRadius: 30
   spawnInterval: 3
 --- !u!4 &830235417
@@ -9923,13 +9924,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41ed875aafecf974d88d66d1ca9aacae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  weaponPickupPrefabs:
-  - {fileID: 1527636707084430590, guid: fe20bf1b8c8e87d44944e1a95a93ac45, type: 3}
-  - {fileID: 2643719196046797261, guid: e2d418025eec12846aa445e1e414c42c, type: 3}
-  - {fileID: 885473237835425761, guid: fa11e2a6b287ccc40a9666ef429a7552, type: 3}
-  - {fileID: 765961509601326450, guid: 70856d59d031236459720b30f3c7a4d6, type: 3}
+  availableWeaponProfiles: []
   spawnRadius: 30
-  spawnInterval: 5
+  spawnInterval: 1
 --- !u!4 &1139870701
 Transform:
   m_ObjectHideFlags: 0
@@ -14690,7 +14687,7 @@ Transform:
   m_GameObject: {fileID: 1499827125}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.7094113, z: -0, w: 0.7047947}
-  m_LocalPosition: {x: -4.4528, y: 11.34, z: -11.5455}
+  m_LocalPosition: {x: -4.487, y: 11.34, z: -11.55}
   m_LocalScale: {x: 21.465387, y: 0.34698, z: 3.8158514}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -16195,7 +16192,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0.9477, y: -1.5, z: 2.4197}
-  m_LocalScale: {x: 16.203661, y: 1, z: 16.328415}
+  m_LocalScale: {x: 16.20459, y: 1, z: 16.328415}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1933809329}

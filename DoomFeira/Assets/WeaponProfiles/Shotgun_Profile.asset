@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7196a990be121c647ab4edff266ef688, type: 3}
   m_Name: Shotgun_Profile
   m_EditorClassIdentifier: 
+  pickupPrefab: {fileID: 2643719196046797261, guid: e2d418025eec12846aa445e1e414c42c, type: 3}
   weaponName: Shotgun
   weaponSprite: {fileID: 1138146663, guid: db5712c42259a37479bb2a640180ba0c, type: 3}
   damagePerShot: 165
