@@ -118,14 +118,23 @@ MonoBehaviour:
     frames:
     - {fileID: 168101181, guid: 2f61b4b1b590af346ad59d5d09c10039, type: 3}
     framesPerSecond: 0
+    loop: 1
   - stateName: Walk
     frames:
     - {fileID: 168101181, guid: 2f61b4b1b590af346ad59d5d09c10039, type: 3}
     framesPerSecond: 0
+    loop: 1
   - stateName: Death
     frames:
-    - {fileID: -1036584624, guid: 3f7950d75b8228343af2c6ea7d38c562, type: 3}
-    framesPerSecond: 0
+    - {fileID: 168101181, guid: 2f61b4b1b590af346ad59d5d09c10039, type: 3}
+    - {fileID: 1808560182, guid: 9487d9b95624f6d48830f6648f564f5c, type: 3}
+    - {fileID: 838665915, guid: 657ea4030f2ce154384c8227f8e63b7c, type: 3}
+    - {fileID: -1116101424, guid: 5eeae9a0af447b7489d21f7ef1f85f85, type: 3}
+    - {fileID: -2142992267, guid: 1b8107fe67f9bcb4188e5fda2eacc12f, type: 3}
+    - {fileID: -2131183480, guid: 0e9b8d05e960c814b8e6958664a3ae5a, type: 3}
+    - {fileID: 2025412293, guid: f28163374de9a044db54a9372b1920d1, type: 3}
+    framesPerSecond: 7
+    loop: 0
 --- !u!1 &6470583162584400145
 GameObject:
   m_ObjectHideFlags: 0

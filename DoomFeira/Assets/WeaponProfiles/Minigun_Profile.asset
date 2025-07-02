@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7196a990be121c647ab4edff266ef688, type: 3}
   m_Name: Minigun_Profile
   m_EditorClassIdentifier: 
+  pickupPrefab: {fileID: 885473237835425761, guid: fa11e2a6b287ccc40a9666ef429a7552, type: 3}
   weaponName: Minigun
   weaponSprite: {fileID: -683416711, guid: f9809327393a055439a74fd0f69b3a53, type: 3}
   damagePerShot: 90

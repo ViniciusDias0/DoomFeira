@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7196a990be121c647ab4edff266ef688, type: 3}
   m_Name: Bazooka_Profile
   m_EditorClassIdentifier: 
+  pickupPrefab: {fileID: 765961509601326450, guid: 70856d59d031236459720b30f3c7a4d6, type: 3}
   weaponName: Bazooka
   weaponSprite: {fileID: -2026535004, guid: e1d0573c9cf664748bcabdfdd1dece51, type: 3}
   damagePerShot: 500
