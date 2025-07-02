@@ -9,6 +9,7 @@ public class AnimationState
     public string stateName; // Ex: "Walk", "Idle", "Death"
     public Sprite[] frames;
     public float framesPerSecond = 10f;
+    public bool loop = true; // <<-- ADICIONE ESTA LINHA (Por padrão, as animações repetem)
 }
 
 public class SpriteAnimator : MonoBehaviour
@@ -35,19 +36,22 @@ public class SpriteAnimator : MonoBehaviour
 
     void Update()
     {
-        // Se não houver uma animação tocando, não faz nada
         if (currentState == null) return;
 
-        // Avança o timer
+        // Se a animação não deve repetir E já estamos no último frame, pare aqui.
+        if (!currentState.loop && currentFrameIndex == currentState.frames.Length - 1)
+        {
+            return; // A animação "congela" no último frame.
+        }
+
+        if (currentState.frames.Length <= 1 || currentState.framesPerSecond <= 0) return;
+
         timer += Time.deltaTime;
 
-        // Se for hora de trocar de frame...
         if (timer >= 1f / currentState.framesPerSecond)
         {
-            timer = 0; // Reseta o timer
-            // Avança para o próximo frame, voltando ao início se chegar ao fim
+            timer = 0;
             currentFrameIndex = (currentFrameIndex + 1) % currentState.frames.Length;
-            // Aplica o novo sprite ao Sprite Renderer
             spriteRenderer.sprite = currentState.frames[currentFrameIndex];
         }
     }

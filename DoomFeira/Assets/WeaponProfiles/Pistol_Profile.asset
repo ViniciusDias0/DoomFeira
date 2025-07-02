@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Pistol_Profile
   m_EditorClassIdentifier: 
   weaponName: Pistola
-  weaponSprite: {fileID: 2145054418, guid: 43cd0996dd8b98742970c04d29c8b9d5, type: 3}
+  weaponSprite: {fileID: -1585309209, guid: f57e004597108da4db7c0f946c9d3a6c, type: 3}
   damagePerShot: 75
   fireRate: 3
   projectileSpeed: 30
