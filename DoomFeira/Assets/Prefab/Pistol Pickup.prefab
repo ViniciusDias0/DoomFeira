@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8375081126547172108}
   - component: {fileID: 4325490018655495968}
   - component: {fileID: 1150191334397289045}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Pistol Pickup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -28,8 +28,8 @@ Transform:
   m_GameObject: {fileID: 1527636707084430590}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.6818, y: 2.618, z: 0.69115174}
-  m_LocalScale: {x: 0.724086, y: 0.65988564, z: 1}
+  m_LocalPosition: {x: -2.4754, y: 2.8705, z: 0.69115174}
+  m_LocalScale: {x: 1.1287915, y: 1.1232527, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}

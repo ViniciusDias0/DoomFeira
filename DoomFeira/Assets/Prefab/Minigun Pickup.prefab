@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6214333189649038997}
   - component: {fileID: 5979801970645929399}
   - component: {fileID: 321585184304939464}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Minigun Pickup
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -22,8 +22,15 @@ public class WeaponStats : MonoBehaviour
     {
         currentProfile = profile;
         currentAmmo = profile.startingAmmo;
-        weaponSpriteRenderer.sprite = profile.weaponSprite;
-        UpdateAmmoUI();
+
+        // --- MUDANÇA AQUI ---
+        // LINHA ANTIGA: weaponSpriteRenderer.sprite = profile.weaponSprite;
+        // LINHA NOVA:
+        weaponSpriteRenderer.sprite = profile.handSprite;
+        // --- FIM DA MUDANÇA ---
+
+        UpdateAmmoUI(); 
+
     }
 
     // Função para adicionar munição (chamada pelo Manager)

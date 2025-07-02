@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pickupPrefab: {fileID: 1527636707084430590, guid: fe20bf1b8c8e87d44944e1a95a93ac45, type: 3}
   weaponName: Pistola
-  weaponSprite: {fileID: -1585309209, guid: f57e004597108da4db7c0f946c9d3a6c, type: 3}
+  handSprite: {fileID: -1585309209, guid: f57e004597108da4db7c0f946c9d3a6c, type: 3}
+  pickupSprite: {fileID: 179975033, guid: f0744bac6685cb14197bf1ade79cb2e8, type: 3}
   damagePerShot: 75
   fireRate: 3
   projectileSpeed: 30

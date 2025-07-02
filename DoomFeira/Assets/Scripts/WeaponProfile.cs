@@ -7,7 +7,8 @@ public class WeaponProfile : ScriptableObject
     public GameObject pickupPrefab;
 
     public string weaponName = "New Weapon";
-    public Sprite weaponSprite;
+    public Sprite handSprite;
+    public Sprite pickupSprite;
     public float damagePerShot = 50f;
     public float fireRate = 5f;
     public float projectileSpeed = 30f;
