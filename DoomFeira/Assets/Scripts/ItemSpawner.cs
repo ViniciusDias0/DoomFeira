@@ -3,59 +3,81 @@ using UnityEngine;
 
 public class ItemSpawner : MonoBehaviour
 {
-    [Header("Configuração de Spawn")]
-    public GameObject[] itemPrefabs;   // Array para colocar nossos prefabs de Cura e Armadura
-    public float spawnRadius = 24f;      // Raio do círculo onde os itens podem nascer
-    public float spawnInterval = 10f;    // Tempo (em segundos) entre cada spawn
+    // --- CORREÇÃO: A VARIÁVEL DE PREFABS VOLTOU! ---
+    [Header("Itens para Spawnar")]
+    public GameObject[] itemPrefabs; // Arraste seus prefabs de Cura e Armadura aqui
 
-    [Header("Controle de Itens")]
-    public int maxItemsOnMap = 5; // Número máximo de itens no mapa ao mesmo tempo
-    private int currentItemCount = 0; // Contador de itens atuais
+    [Header("Configuração de Spawn")]
+    public float spawnInterval = 10f;
+    public Vector3 spawnAreaSize = new Vector3(20f, 2f, 20f);
+
+    [Header("Controle de Colisão e Itens")]
+    public int maxItemsOnMap = 5;
+    public LayerMask obstacleLayer;
+    public float itemCheckRadius = 1f;
+    public int maxSpawnAttempts = 20; // Aumentei um pouco o número de tentativas
+
+    // O contador agora é privado, pois sua lógica é interna ao script.
+    private int currentItemCount = 0;
 
     void Start()
     {
-        // Inicia a rotina de spawn de itens
+        // Garante que os prefabs foram atribuídos no Inspector.
+        if (itemPrefabs == null || itemPrefabs.Length == 0)
+        {
+            Debug.LogError("ItemSpawner: Nenhum prefab de item foi atribuído no Inspector!");
+            this.enabled = false; // Desativa o spawner se não houver itens para criar.
+            return;
+        }
         StartCoroutine(SpawnItemsRoutine());
     }
 
     IEnumerator SpawnItemsRoutine()
     {
-        // Loop infinito para sempre tentar criar itens
         while (true)
         {
-            // Só cria um novo item se tivermos espaço no mapa
+            // O contador de itens será atualizado antes de cada tentativa de spawn.
+            currentItemCount = FindObjectsByType<Powerup>(FindObjectsSortMode.None).Length;
+
             if (currentItemCount < maxItemsOnMap)
             {
                 SpawnRandomItem();
             }
-            // Espera o intervalo de tempo antes de tentar novamente
             yield return new WaitForSeconds(spawnInterval);
         }
     }
 
     void SpawnRandomItem()
     {
-        // 1. Escolhe um item aleatório do nosso array de prefabs
-        int randomIndex = Random.Range(0, itemPrefabs.Length);
-        GameObject itemToSpawn = itemPrefabs[randomIndex];
-        
-        // 2. Gera uma posição aleatória dentro do círculo da arena
-        Vector2 randomPointInCircle = Random.insideUnitCircle * spawnRadius;
-        Vector3 spawnPosition = new Vector3(randomPointInCircle.x, 1f, randomPointInCircle.y); // Y=1 para ele aparecer um pouco acima do chão
+        for (int i = 0; i < maxSpawnAttempts; i++)
+        {
+            float randomX = Random.Range(-spawnAreaSize.x / 2, spawnAreaSize.x / 2);
+            float randomY = Random.Range(-spawnAreaSize.y / 2, spawnAreaSize.y / 2);
+            float randomZ = Random.Range(-spawnAreaSize.z / 2, spawnAreaSize.z / 2);
 
-        // 3. Cria (instancia) o item na cena
-        Instantiate(itemToSpawn, spawnPosition, Quaternion.identity);
+            Vector3 spawnPosition = transform.position + new Vector3(randomX, randomY, randomZ);
 
-        // 4. Incrementa nosso contador de itens
-        currentItemCount++;
+            if (!Physics.CheckSphere(spawnPosition, itemCheckRadius, obstacleLayer))
+            {
+                int randomIndex = Random.Range(0, itemPrefabs.Length);
+                GameObject itemToSpawn = itemPrefabs[randomIndex];
+
+                Instantiate(itemToSpawn, spawnPosition, Quaternion.identity);
+                // Não precisamos mais incrementar manualmente, a rotina já atualiza o contador.
+                return;
+            }
+        }
+
+        Debug.LogWarning("ItemSpawner: Não foi possível encontrar um local válido para spawnar o item.");
     }
 
-    // Precisamos de uma forma de saber quando um item é destruído
-    // Podemos fazer isso com um evento ou de forma mais simples:
-    void Update()
+    // A função Update() não é mais necessária, a contagem foi movida para a Coroutine.
+
+    private void OnDrawGizmosSelected()
     {
-        // Encontra todos os objetos com o script Powerup na cena e atualiza o contador
-        // Nota: Não é a forma mais otimizada, mas para um jogo simples, funciona perfeitamente.
-        currentItemCount = FindObjectsByType<Powerup>(FindObjectsSortMode.None).Length;
+        Gizmos.color = new Color(0, 1, 1, 0.5f);
+        Gizmos.DrawCube(transform.position, spawnAreaSize);
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawWireCube(transform.position, spawnAreaSize);
     }
 }

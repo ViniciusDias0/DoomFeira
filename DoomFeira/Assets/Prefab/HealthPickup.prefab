@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 338585012280805855}
   - component: {fileID: 183265289836172927}
   - component: {fileID: 8598312215724454499}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: HealthPickup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -124,3 +124,4 @@ MonoBehaviour:
   type: 0
   value: 25
   rotationSpeed: 50
+  lifetime: 10
