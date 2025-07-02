@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7196a990be121c647ab4edff266ef688, type: 3}
   m_Name: Pistol_Profile
   m_EditorClassIdentifier: 
+  pickupPrefab: {fileID: 1527636707084430590, guid: fe20bf1b8c8e87d44944e1a95a93ac45, type: 3}
   weaponName: Pistola
-  weaponSprite: {fileID: 2145054418, guid: 43cd0996dd8b98742970c04d29c8b9d5, type: 3}
+  weaponSprite: {fileID: -1585309209, guid: f57e004597108da4db7c0f946c9d3a6c, type: 3}
   damagePerShot: 75
   fireRate: 3
   projectileSpeed: 30

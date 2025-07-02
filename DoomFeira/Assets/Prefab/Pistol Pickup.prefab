@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8375081126547172108}
   - component: {fileID: 4325490018655495968}
   - component: {fileID: 1150191334397289045}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Pistol Pickup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -78,7 +78,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 2145054418, guid: 43cd0996dd8b98742970c04d29c8b9d5, type: 3}
+  m_Sprite: {fileID: 179975033, guid: f0744bac6685cb14197bf1ade79cb2e8, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

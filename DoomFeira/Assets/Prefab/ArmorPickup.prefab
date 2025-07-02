@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 534870042617485936}
   - component: {fileID: 1360304876300738935}
   - component: {fileID: 883346228498708564}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: ArmorPickup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -124,3 +124,4 @@ MonoBehaviour:
   type: 1
   value: 15
   rotationSpeed: 50
+  lifetime: 10

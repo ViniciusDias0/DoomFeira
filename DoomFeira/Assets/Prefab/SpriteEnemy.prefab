@@ -118,10 +118,12 @@ MonoBehaviour:
     frames:
     - {fileID: 1975587952, guid: 02ea9b61ef6c2d242985f0e9a176af61, type: 3}
     framesPerSecond: 0
+    loop: 1
   - stateName: Walk
     frames:
     - {fileID: 1975587952, guid: 02ea9b61ef6c2d242985f0e9a176af61, type: 3}
     framesPerSecond: 0
+    loop: 1
   - stateName: Death
     frames:
     - {fileID: 1975587952, guid: 02ea9b61ef6c2d242985f0e9a176af61, type: 3}
@@ -131,6 +133,7 @@ MonoBehaviour:
     - {fileID: 1896055943, guid: 6f7d7aea58d8c154ab57c09bf2688d65, type: 3}
     - {fileID: 2114578532, guid: c0ccbc710c950d141ab280be9200f039, type: 3}
     framesPerSecond: 6
+    loop: 0
 --- !u!1 &6470583162584400145
 GameObject:
   m_ObjectHideFlags: 0
