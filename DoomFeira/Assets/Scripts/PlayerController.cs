@@ -170,18 +170,17 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    // --- A ÚNICA ALTERAÇÃO FOI FEITA AQUI ---
     private void Die()
     {
-        Debug.Log("GAME OVER! Reiniciando...");
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-
+        // A lógica antiga de reiniciar a cena foi substituída pela nova lógica
+        // que chama o sistema de Game Over. A lógica do Debug.Log pode ser mantida.
         Debug.Log("O jogador morreu! Acionando o sistema de Game Over...");
-        // Em vez de recarregar a cena, nós encontramos o nosso "gatilho" e o acionamos.
-        // É responsabilidade do gatilho pegar a pontuação e carregar a próxima cena.
-        // Se o GameOverTrigger não existir na cena, ele apenas dará um erro no console,
-        // mas não quebrará o PlayerController.
-        //FindObjectOfType<GameOverTrigger>().TriggerGameOver();
+
+        // Esta linha encontra o GameOverTrigger na cena e chama a função para carregar a tela de Game Over.
+        FindObjectOfType<GameOverTrigger>().TriggerGameOver();
     }
+    // --- FIM DA ALTERAÇÃO ---
 
     // Função central para atualizar o HUD, para não repetir código
     private void UpdateHud()
@@ -194,7 +193,6 @@ public class PlayerController : MonoBehaviour
     }
 
     // Adicione esta nova função ao PlayerController.cs
-
     private void HandleHeadBob()
     {
         // Se o efeito estiver desligado, não faz nada
