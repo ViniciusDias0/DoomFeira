@@ -28,8 +28,8 @@ Transform:
   m_GameObject: {fileID: 959314908138684322}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.035, y: 0.986, z: 0}
-  m_LocalScale: {x: 0.25278208, y: 0.24959932, z: 1}
+  m_LocalPosition: {x: 0.01, y: 1.321, z: 0}
+  m_LocalScale: {x: 1.3957131, y: 1.3133168, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1253807394636134902}
@@ -116,16 +116,21 @@ MonoBehaviour:
   animationStates:
   - stateName: Idle
     frames:
-    - {fileID: 1155394862, guid: 66dcb01bec5102f45a0b780fc0febc9b, type: 3}
+    - {fileID: 1975587952, guid: 02ea9b61ef6c2d242985f0e9a176af61, type: 3}
     framesPerSecond: 0
   - stateName: Walk
     frames:
-    - {fileID: -1748062894, guid: 3f7950d75b8228343af2c6ea7d38c562, type: 3}
+    - {fileID: 1975587952, guid: 02ea9b61ef6c2d242985f0e9a176af61, type: 3}
     framesPerSecond: 0
   - stateName: Death
     frames:
-    - {fileID: -1036584624, guid: 3f7950d75b8228343af2c6ea7d38c562, type: 3}
-    framesPerSecond: 0
+    - {fileID: 1975587952, guid: 02ea9b61ef6c2d242985f0e9a176af61, type: 3}
+    - {fileID: 819562286, guid: 7fffc0bf8f3ae604a8e7beb55dcd632d, type: 3}
+    - {fileID: 264292348, guid: 734fde54f1f5c1549b220feefe99f050, type: 3}
+    - {fileID: 231409522, guid: a0744e8ddb618e044bc5dd10ee99fef0, type: 3}
+    - {fileID: 1896055943, guid: 6f7d7aea58d8c154ab57c09bf2688d65, type: 3}
+    - {fileID: 2114578532, guid: c0ccbc710c950d141ab280be9200f039, type: 3}
+    framesPerSecond: 6
 --- !u!1 &6470583162584400145
 GameObject:
   m_ObjectHideFlags: 0

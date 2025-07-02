@@ -176,8 +176,15 @@ public class PlayerController : MonoBehaviour
         // A lógica antiga de reiniciar a cena foi substituída pela nova lógica
         // que chama o sistema de Game Over. A lógica do Debug.Log pode ser mantida.
         Debug.Log("O jogador morreu! Acionando o sistema de Game Over...");
+<<<<<<< Updated upstream
 
         // Esta linha encontra o GameOverTrigger na cena e chama a função para carregar a tela de Game Over.
+=======
+        // Em vez de recarregar a cena, nós encontramos o nosso "gatilho" e o acionamos.
+        // É responsabilidade do gatilho pegar a pontuação e carregar a próxima cena.
+        // Se o GameOverTrigger não existir na cena, ele apenas dará um erro no console,
+        // mas não quebrará o PlayerController.
+>>>>>>> Stashed changes
         FindObjectOfType<GameOverTrigger>().TriggerGameOver();
     }
     // --- FIM DA ALTERAÇÃO ---

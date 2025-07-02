@@ -28,8 +28,8 @@ Transform:
   m_GameObject: {fileID: 959314908138684322}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.026, y: 1.0588, z: 0}
-  m_LocalScale: {x: 0.25278208, y: 0.24959932, z: 1}
+  m_LocalPosition: {x: -0.0401, y: 0.9661, z: 0}
+  m_LocalScale: {x: 1.397215, y: 1.5816294, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1253807394636134902}
@@ -116,11 +116,11 @@ MonoBehaviour:
   animationStates:
   - stateName: Idle
     frames:
-    - {fileID: -707602967, guid: 53d9cca289c020a4b88d49c7eca7f4f7, type: 3}
+    - {fileID: 168101181, guid: 2f61b4b1b590af346ad59d5d09c10039, type: 3}
     framesPerSecond: 0
   - stateName: Walk
     frames:
-    - {fileID: -1748062894, guid: 3f7950d75b8228343af2c6ea7d38c562, type: 3}
+    - {fileID: 168101181, guid: 2f61b4b1b590af346ad59d5d09c10039, type: 3}
     framesPerSecond: 0
   - stateName: Death
     frames:
