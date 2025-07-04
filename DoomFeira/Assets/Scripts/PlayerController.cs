@@ -31,10 +31,12 @@ public class PlayerController : MonoBehaviour
     [Header("Equipamento")]
     public WeaponStats currentWeapon;
 
-
+    private Rigidbody rb;
     void Start()
     {
         playerCamera = GetComponentInChildren<Camera>();
+        rb = GetComponent<Rigidbody>(); // Pega o componente Rigidbody no mesmo objeto
+
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
@@ -54,18 +56,39 @@ public class PlayerController : MonoBehaviour
         {
             cameraDefaultPosition = playerCamera.transform.localPosition;
         }
+        if (rb == null)
+        {
+            Debug.LogError("PlayerController precisa de um componente Rigidbody para funcionar!");
+        }
 
     }
 
     void Update()
     {
-        HandleMovement();
         HandleShooting();
         HandleDebugInputs();
 
         HandleHeadBob();
     }
+    // FixedUpdate é o lugar correto para toda a lógica de física.
+    void FixedUpdate()
+    {
+        // Pega os inputs do teclado
+        float moveVertical = Input.GetAxis("Vertical");
+        float rotationHorizontal = Input.GetAxis("Horizontal");
 
+        // --- ROTAÇÃO ---
+        // Cria uma rotação baseada no input horizontal
+        Quaternion deltaRotation = Quaternion.Euler(Vector3.up * rotationHorizontal * rotationSpeed * Time.fixedDeltaTime);
+        // Aplica a rotação ao Rigidbody. Isso é mais suave e seguro para física.
+        rb.MoveRotation(rb.rotation * deltaRotation);
+
+        // --- MOVIMENTO ---
+        // Calcula o vetor de movimento para frente, relativo à rotação atual do jogador
+        Vector3 moveDirection = transform.forward * moveVertical * moveSpeed * Time.fixedDeltaTime;
+        // Aplica o movimento ao Rigidbody, respeitando as colisões
+        rb.MovePosition(rb.position + moveDirection);
+    }
     private void HandleMovement()
     {
         float moveVertical = Input.GetAxis("Vertical");
