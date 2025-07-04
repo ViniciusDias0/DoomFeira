@@ -14,15 +14,16 @@ public class WeaponPickup : MonoBehaviour
     // A função Start é executada uma vez quando o objeto é criado
     void Start()
     {
-        // Garante que o item tenha uma aparência visual baseada no perfil da arma
-        // Isso é útil se você tiver um spawner que atribui o perfil dinamicamente
+        // Esta linha garante que a imagem correta (a do item no chão) seja mostrada.
         SpriteRenderer sr = GetComponentInChildren<SpriteRenderer>();
-        if (sr != null && weaponProfile != null && weaponProfile.weaponSprite != null)
+        if (sr != null && weaponProfile != null && weaponProfile.pickupSprite != null)
         {
-            sr.sprite = weaponProfile.weaponSprite;
+            // --- MUDANÇA AQUI ---
+            sr.sprite = weaponProfile.pickupSprite;
+            // --- FIM DA MUDANÇA ---
         }
 
-        // Inicia a "contagem regressiva" para o item desaparecer
+        // O resto da sua lógica de Start, como a coroutine de tempo de vida.
         StartCoroutine(LifetimeRoutine());
     }
 

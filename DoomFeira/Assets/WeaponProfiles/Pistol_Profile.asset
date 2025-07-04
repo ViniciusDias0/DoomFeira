@@ -14,7 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pickupPrefab: {fileID: 1527636707084430590, guid: fe20bf1b8c8e87d44944e1a95a93ac45, type: 3}
   weaponName: Pistola
-  weaponSprite: {fileID: -1585309209, guid: f57e004597108da4db7c0f946c9d3a6c, type: 3}
+  handSprite: {fileID: 359809315, guid: 5a12964760af71f4a95cc9c9b97fbba8, type: 3}
+  shootAnimationFrames:
+  - {fileID: 1761278607, guid: 8037bf1bdd3d28240b702bcd09c3e384, type: 3}
+  - {fileID: -1585309209, guid: f57e004597108da4db7c0f946c9d3a6c, type: 3}
+  - {fileID: 1684067763, guid: a0927cf51fb623d45a1c0e9a5313762e, type: 3}
+  pickupSprite: {fileID: 179975033, guid: f0744bac6685cb14197bf1ade79cb2e8, type: 3}
   damagePerShot: 75
   fireRate: 3
   projectileSpeed: 30
@@ -22,4 +27,4 @@ MonoBehaviour:
   spreadAngle: 0
   maxAmmo: 450
   startingAmmo: 450
-  projectilePrefab: {fileID: 3485942960392533794, guid: 61e4ae0ea7bc4ac46860c98e8fb715a3, type: 3}
+  projectilePrefab: {fileID: 2844178852169528482, guid: f5a58b809fee26743b5e40153a32a504, type: 3}
