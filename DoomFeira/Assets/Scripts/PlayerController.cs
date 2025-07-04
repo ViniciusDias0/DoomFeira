@@ -177,7 +177,6 @@ public class PlayerController : MonoBehaviour
         // que chama o sistema de Game Over. A lógica do Debug.Log pode ser mantida.
         Debug.Log("O jogador morreu! Acionando o sistema de Game Over...");
 
-        // Esta linha encontra o GameOverTrigger na cena e chama a função para carregar a tela de Game Over.
         FindObjectOfType<GameOverTrigger>().TriggerGameOver();
     }
     // --- FIM DA ALTERAÇÃO ---
