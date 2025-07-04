@@ -1,0 +1,236 @@
+fileFormatVersion: 2
+guid: 053eeb640f5b3f74081a30ac98dd8dc0
+TextureImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 0
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Bubble-PNG-Free-Download_28
+      rect:
+        serializedVersion: 2
+        x: 33
+        y: 0
+        width: 2931
+        height: 3000
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dd95c4377fd1cc04dbb9d1b075877337
+      internalID: -583559912
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: cc9342aef4d0e784d93d7d77841d4a86
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Bubble-PNG-Free-Download_0: 1899232447
+      Bubble-PNG-Free-Download_1: 1121638454
+      Bubble-PNG-Free-Download_10: -1241098051
+      Bubble-PNG-Free-Download_11: 1723860575
+      Bubble-PNG-Free-Download_12: -877613235
+      Bubble-PNG-Free-Download_13: -1321794648
+      Bubble-PNG-Free-Download_14: -296876289
+      Bubble-PNG-Free-Download_15: -1732057354
+      Bubble-PNG-Free-Download_16: -352550791
+      Bubble-PNG-Free-Download_17: -1812741634
+      Bubble-PNG-Free-Download_18: 275376567
+      Bubble-PNG-Free-Download_19: 1654001698
+      Bubble-PNG-Free-Download_2: 1380693643
+      Bubble-PNG-Free-Download_20: 1127149517
+      Bubble-PNG-Free-Download_21: 1266365139
+      Bubble-PNG-Free-Download_22: -1112840658
+      Bubble-PNG-Free-Download_23: -354390205
+      Bubble-PNG-Free-Download_24: -974140575
+      Bubble-PNG-Free-Download_25: 2010542590
+      Bubble-PNG-Free-Download_26: -1807192412
+      Bubble-PNG-Free-Download_27: 1453676589
+      Bubble-PNG-Free-Download_28: -583559912
+      Bubble-PNG-Free-Download_29: 816145721
+      Bubble-PNG-Free-Download_3: 1462955659
+      Bubble-PNG-Free-Download_30: -32682261
+      Bubble-PNG-Free-Download_31: -1352441930
+      Bubble-PNG-Free-Download_32: -1437636286
+      Bubble-PNG-Free-Download_33: -766528775
+      Bubble-PNG-Free-Download_34: -855958589
+      Bubble-PNG-Free-Download_35: -1294646791
+      Bubble-PNG-Free-Download_36: -119066886
+      Bubble-PNG-Free-Download_37: 580562849
+      Bubble-PNG-Free-Download_38: -1995500725
+      Bubble-PNG-Free-Download_39: -1611442494
+      Bubble-PNG-Free-Download_4: 432982480
+      Bubble-PNG-Free-Download_40: -1222117014
+      Bubble-PNG-Free-Download_41: -744244817
+      Bubble-PNG-Free-Download_42: -1713421613
+      Bubble-PNG-Free-Download_43: 1446491983
+      Bubble-PNG-Free-Download_44: -1480252765
+      Bubble-PNG-Free-Download_45: 1961384630
+      Bubble-PNG-Free-Download_46: 1039209607
+      Bubble-PNG-Free-Download_47: 1611614511
+      Bubble-PNG-Free-Download_48: -358432456
+      Bubble-PNG-Free-Download_49: 1035270411
+      Bubble-PNG-Free-Download_5: -499996499
+      Bubble-PNG-Free-Download_50: 2102994665
+      Bubble-PNG-Free-Download_51: 84282819
+      Bubble-PNG-Free-Download_52: 557303843
+      Bubble-PNG-Free-Download_53: 575686161
+      Bubble-PNG-Free-Download_54: -2113579622
+      Bubble-PNG-Free-Download_55: -926210299
+      Bubble-PNG-Free-Download_56: 255840234
+      Bubble-PNG-Free-Download_57: 1119074422
+      Bubble-PNG-Free-Download_58: -1470802829
+      Bubble-PNG-Free-Download_59: 1342081712
+      Bubble-PNG-Free-Download_6: -29438155
+      Bubble-PNG-Free-Download_60: -1707266267
+      Bubble-PNG-Free-Download_61: -622672992
+      Bubble-PNG-Free-Download_62: -391504820
+      Bubble-PNG-Free-Download_63: 813966098
+      Bubble-PNG-Free-Download_64: -2053318033
+      Bubble-PNG-Free-Download_65: 1865120847
+      Bubble-PNG-Free-Download_66: 1350855857
+      Bubble-PNG-Free-Download_67: -778421174
+      Bubble-PNG-Free-Download_68: -1500523683
+      Bubble-PNG-Free-Download_69: -1603926805
+      Bubble-PNG-Free-Download_7: 1878035415
+      Bubble-PNG-Free-Download_70: -168147462
+      Bubble-PNG-Free-Download_71: 313898470
+      Bubble-PNG-Free-Download_72: -1324913007
+      Bubble-PNG-Free-Download_73: -176117879
+      Bubble-PNG-Free-Download_74: 1666748541
+      Bubble-PNG-Free-Download_75: 1933763533
+      Bubble-PNG-Free-Download_76: 840859868
+      Bubble-PNG-Free-Download_77: -1678281561
+      Bubble-PNG-Free-Download_78: 1139468512
+      Bubble-PNG-Free-Download_79: -692659440
+      Bubble-PNG-Free-Download_8: 956344627
+      Bubble-PNG-Free-Download_80: -1180276609
+      Bubble-PNG-Free-Download_81: 1997026680
+      Bubble-PNG-Free-Download_82: 1583320015
+      Bubble-PNG-Free-Download_83: 513266403
+      Bubble-PNG-Free-Download_84: 524733521
+      Bubble-PNG-Free-Download_85: -1893811719
+      Bubble-PNG-Free-Download_86: -356742922
+      Bubble-PNG-Free-Download_87: -314726398
+      Bubble-PNG-Free-Download_88: -787405532
+      Bubble-PNG-Free-Download_89: -438632827
+      Bubble-PNG-Free-Download_9: 1279075006
+      Bubble-PNG-Free-Download_90: -615346494
+      Bubble-PNG-Free-Download_91: 573033003
+      Bubble-PNG-Free-Download_92: 327329961
+      Bubble-PNG-Free-Download_93: -1140479925
+      Bubble-PNG-Free-Download_94: 803841702
+      Bubble-PNG-Free-Download_95: 2080547641
+      Bubble-PNG-Free-Download_96: 841142509
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

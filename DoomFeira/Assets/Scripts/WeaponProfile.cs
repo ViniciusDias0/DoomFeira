@@ -8,6 +8,7 @@ public class WeaponProfile : ScriptableObject
 
     public string weaponName = "New Weapon";
     public Sprite handSprite;
+    public Sprite[] shootAnimationFrames;
     public Sprite pickupSprite;
     public float damagePerShot = 50f;
     public float fireRate = 5f;

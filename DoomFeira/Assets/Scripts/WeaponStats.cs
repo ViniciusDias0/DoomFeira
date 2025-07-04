@@ -9,12 +9,15 @@ public class WeaponStats : MonoBehaviour
     private SpriteRenderer weaponSpriteRenderer;
     private Transform firePoint;
     private HUDManager hudManager;
+    private WeaponAnimator weaponAnimator;
 
     void Awake()
     {
         weaponSpriteRenderer = GetComponentInChildren<SpriteRenderer>();
         firePoint = transform.Find("FirePoint");
         hudManager = FindObjectOfType<HUDManager>();
+        weaponAnimator = GetComponentInChildren<WeaponAnimator>();
+
     }
 
     // Função para carregar um novo perfil de arma (chamada pelo Manager)
@@ -23,11 +26,12 @@ public class WeaponStats : MonoBehaviour
         currentProfile = profile;
         currentAmmo = profile.startingAmmo;
 
-        // --- MUDANÇA AQUI ---
-        // LINHA ANTIGA: weaponSpriteRenderer.sprite = profile.weaponSprite;
-        // LINHA NOVA:
         weaponSpriteRenderer.sprite = profile.handSprite;
-        // --- FIM DA MUDANÇA ---
+        if (weaponAnimator != null)
+        {
+            weaponAnimator.SetAnimationData(profile.handSprite, profile.shootAnimationFrames, profile.fireRate);
+        }
+
 
         UpdateAmmoUI(); 
 
@@ -45,6 +49,12 @@ public class WeaponStats : MonoBehaviour
     {
         if (currentProfile == null || Time.time < nextFireTime || currentAmmo <= 0) return;
         nextFireTime = Time.time + 1f / currentProfile.fireRate;
+
+        if (weaponAnimator != null)
+        {
+            weaponAnimator.PlayShootAnimation();
+        }
+
         Shoot();
     }
 
