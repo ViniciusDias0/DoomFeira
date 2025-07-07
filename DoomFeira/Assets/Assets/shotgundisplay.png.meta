@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: b240243098a23534585638e220e2eab1
+guid: 1bf9414d2e8072545839616f79b6ddbb
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -136,13 +136,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: shotgun8_0
+      name: shotgundisplay_0
       rect:
         serializedVersion: 2
-        x: 109
-        y: 0
-        width: 178
-        height: 263
+        x: 39
+        y: 73
+        width: 194
+        height: 65
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -151,8 +151,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f1ce71c829c4b8d4f977f29ca8e30afc
-      internalID: -1052079136
+      spriteID: ea91028d2d6c9b24c95e2b805e099701
+      internalID: -658032787
       vertices: []
       indices: 
       edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: ba9e0f24d5aef6f42893e56a3290d5a0
+    spriteID: c42256919a72d4d45ab748d4a22ba57f
     internalID: 0
     vertices: []
     indices: 
@@ -171,7 +171,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      shotgun8_0: -1052079136
+      shotgundisplay_0: -658032787
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

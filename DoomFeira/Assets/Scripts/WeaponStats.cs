@@ -27,14 +27,16 @@ public class WeaponStats : MonoBehaviour
         currentAmmo = profile.startingAmmo;
 
         weaponSpriteRenderer.sprite = profile.handSprite;
+
+        // --- MUDANÇA AQUI ---
         if (weaponAnimator != null)
         {
-            weaponAnimator.SetAnimationData(profile.handSprite, profile.shootAnimationFrames, profile.fireRate);
+            // Agora passamos o valor de FPS da animação diretamente do perfil da arma
+            weaponAnimator.SetAnimationData(profile.handSprite, profile.shootAnimationFrames, profile.shootAnimationFPS);
         }
+        // --- FIM DA MUDANÇA ---
 
-
-        UpdateAmmoUI(); 
-
+        UpdateAmmoUI();
     }
 
     // Função para adicionar munição (chamada pelo Manager)

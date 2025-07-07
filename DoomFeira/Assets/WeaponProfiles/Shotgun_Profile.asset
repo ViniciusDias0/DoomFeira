@@ -14,9 +14,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pickupPrefab: {fileID: 2643719196046797261, guid: e2d418025eec12846aa445e1e414c42c, type: 3}
   weaponName: Shotgun
-  weaponSprite: {fileID: 1138146663, guid: db5712c42259a37479bb2a640180ba0c, type: 3}
+  handSprite: {fileID: -800821271, guid: be4103d17d183994e8c189238ad621d8, type: 3}
+  shootAnimationFrames:
+  - {fileID: 942743377, guid: ce8bab6e5df309341a4a01d5bf35ad42, type: 3}
+  - {fileID: -1664876466, guid: 9b68081f17936c145be57305d5d4f9f8, type: 3}
+  - {fileID: -800821271, guid: be4103d17d183994e8c189238ad621d8, type: 3}
+  - {fileID: 1147129942, guid: 0430144842e773c4e8a8071850967a33, type: 3}
+  - {fileID: 1966989824, guid: 9235e7aa251b50b48abf2509449ad909, type: 3}
+  - {fileID: 252854082, guid: 6260e7a7a69d4ee4b88246cd8848fc95, type: 3}
+  - {fileID: 1539540143, guid: 398123b4c34d1dc4a8bf02c913caeb2a, type: 3}
+  - {fileID: -1052079136, guid: b240243098a23534585638e220e2eab1, type: 3}
+  - {fileID: 171411554, guid: cfc46bc9ad1a4f2419afb2bdc7b700a6, type: 3}
+  shootAnimationFPS: 8
+  pickupSprite: {fileID: -658032787, guid: 1bf9414d2e8072545839616f79b6ddbb, type: 3}
   damagePerShot: 165
-  fireRate: 2
+  fireRate: 1
   projectileSpeed: 30
   projectilesPerShot: 1
   spreadAngle: 0

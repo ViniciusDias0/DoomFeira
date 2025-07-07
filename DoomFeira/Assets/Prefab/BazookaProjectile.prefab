@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 230228855971313335}
   - component: {fileID: 1428156779032139296}
   - component: {fileID: 6519255253955924306}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: BazookaProjectile
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -5,11 +5,14 @@ public class EnemySpawner : MonoBehaviour
 {
     [Header("Configuração de Inimigos")]
     public GameObject[] enemyPrefabs;
-    public float spawnRadius = 20f;
+
+    // --- MUDANÇA: De raio para dimensões de uma caixa ---
+    [Header("Área de Spawn (Paralelepípedo)")]
+    public Vector3 spawnAreaSize = new Vector3(40, 1, 40); // Largura(X), Altura(Y), Comprimento(Z)
 
     [Header("Zona de Segurança do Jogador")]
-    public Transform playerTransform; // Arraste o objeto do jogador aqui
-    public float playerSafeZoneRadius = 7f; // Inimigos não nascerão dentro deste raio
+    public Transform playerTransform;
+    public float playerSafeZoneRadius = 7f;
 
     [Header("Dificuldade Progressiva")]
     public float initialSpawnInterval = 4.0f;
@@ -21,6 +24,26 @@ public class EnemySpawner : MonoBehaviour
 
     private float currentSpawnInterval;
     private int currentSpawnCount;
+
+    // --- ADIÇÃO: A Função OnDrawGizmos ---
+    // Esta função é chamada pela Unity apenas no Editor, e é onde desenhamos os Gizmos.
+    void OnDrawGizmosSelected()
+    {
+        // Define a cor do Gizmo para a área de spawn
+        Gizmos.color = new Color(0, 1, 0, 0.5f); // Verde semitransparente
+        // Desenha um cubo (paralelepípedo) com o centro na posição do spawner e com o tamanho definido
+        Gizmos.DrawCube(transform.position, spawnAreaSize);
+
+        // Desenha a zona de segurança do jogador se ele estiver definido
+        if (playerTransform != null)
+        {
+            // Define a cor do Gizmo para a zona de segurança
+            Gizmos.color = new Color(1, 0, 0, 0.3f); // Vermelho semitransparente
+            // Desenha uma esfera na posição do jogador com o raio da zona de segurança
+            Gizmos.DrawSphere(playerTransform.position, playerSafeZoneRadius);
+        }
+    }
+
 
     void Start()
     {
@@ -43,6 +66,8 @@ public class EnemySpawner : MonoBehaviour
             currentSpawnInterval -= intervalDecreaseRate * Time.deltaTime;
         }
     }
+
+    // ... As suas coroutines SpawnEnemiesRoutine e IncreaseDifficultyRoutine permanecem exatamente as mesmas ...
 
     IEnumerator SpawnEnemiesRoutine()
     {
@@ -68,32 +93,34 @@ public class EnemySpawner : MonoBehaviour
         }
     }
 
-    // --- FUNÇÃO MODIFICADA ---
+
+    // --- FUNÇÃO MODIFICADA PARA SPAWN EM CAIXA ---
     void SpawnSingleEnemy()
     {
         if (enemyPrefabs.Length == 0 || playerTransform == null) return;
 
         Vector3 spawnPosition;
-        int attempts = 0; // Um contador para evitar loops infinitos
+        int attempts = 0;
 
-        // Tenta encontrar uma posição válida por até 20 vezes
         do
         {
-            Vector2 randomPointInCircle = Random.insideUnitCircle * spawnRadius;
-            spawnPosition = new Vector3(randomPointInCircle.x, 1f, randomPointInCircle.y);
+            // Calcula um ponto aleatório dentro do paralelepípedo
+            float randomX = Random.Range(-spawnAreaSize.x / 2, spawnAreaSize.x / 2);
+            float randomZ = Random.Range(-spawnAreaSize.z / 2, spawnAreaSize.z / 2);
+
+            // A posição do spawn é o centro do spawner + o desvio aleatório
+            spawnPosition = transform.position + new Vector3(randomX, 0, randomZ);
+
             attempts++;
 
-            // Se tentarmos demais e não acharmos um lugar, desiste por este frame
             if (attempts > 20)
             {
                 Debug.LogWarning("Não foi possível encontrar um local de spawn seguro. Pulando este spawn.");
                 return;
             }
         }
-        // A condição do loop: continue tentando enquanto a distância for MENOR que a zona de segurança
         while (Vector3.Distance(spawnPosition, playerTransform.position) < playerSafeZoneRadius);
 
-        // Se encontrou um local válido, cria o inimigo
         GameObject enemyToSpawn = enemyPrefabs[Random.Range(0, enemyPrefabs.Length)];
         Instantiate(enemyToSpawn, spawnPosition, Quaternion.identity);
     }

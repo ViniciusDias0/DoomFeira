@@ -152,7 +152,7 @@ MonoBehaviour:
   - {fileID: 4991729512993522564, guid: a4f564ec4da480b4aa070121b7d753d1, type: 3}
   - {fileID: 1550829367431230638, guid: 7771a2a88fe01874da524912aa535859, type: 3}
   spawnInterval: 10
-  spawnAreaSize: {x: 80, y: 0.5, z: 80}
+  spawnAreaSize: {x: 51, y: 0.5, z: 51}
   maxItemsOnMap: 5
   obstacleLayer:
     serializedVersion: 2
@@ -168,7 +168,7 @@ Transform:
   m_GameObject: {fileID: 24565121}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.1, y: 1.06, z: 1.9}
+  m_LocalPosition: {x: 15, y: 1.06, z: 20.1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -8827,7 +8827,7 @@ MonoBehaviour:
   - {fileID: 6470583162584400145, guid: 039abb60e4b0b634aa2fca3833c60615, type: 3}
   - {fileID: 6470583162584400145, guid: 10182caa95ce51d4abb224fbb0a6345c, type: 3}
   - {fileID: 6470583162584400145, guid: a3d330a4c12925f40bda93fcb173f112, type: 3}
-  spawnRadius: 30
+  spawnAreaSize: {x: 51, y: 1, z: 51}
   playerTransform: {fileID: 1366290411}
   playerSafeZoneRadius: 7
   initialSpawnInterval: 7
@@ -8845,7 +8845,7 @@ Transform:
   m_GameObject: {fileID: 830235415}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.12, y: 1.21, z: 0.5}
+  m_LocalPosition: {x: 15.1, y: 1.9, z: 20.3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -17374,7 +17374,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa5669c4a0ea9d34ba262341794891b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startingWeaponProfile: {fileID: 11400000, guid: 6ec51ec90c9d6e540aac70212317789b, type: 2}
+  startingWeaponProfile: {fileID: 11400000, guid: 7b04d45a35b5be546a9302e4bbade772, type: 2}
   weaponScriptInstance: {fileID: 951880773}
 --- !u!114 &1366290413
 MonoBehaviour:
@@ -18623,6 +18623,7 @@ GameObject:
   - component: {fileID: 1456174491}
   - component: {fileID: 1456174490}
   - component: {fileID: 1456174489}
+  - component: {fileID: 1456174492}
   m_Layer: 5
   m_Name: FaceImage
   m_TagString: Untagged
@@ -18687,6 +18688,18 @@ RectTransform:
   m_AnchoredPosition: {x: -0.000011444, y: -4.3634}
   m_SizeDelta: {x: 148.7381, y: 113.3108}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1456174492
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1456174488}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eecef27fad312fd4690d6d04238e2b88, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1490072343
 GameObject:
   m_ObjectHideFlags: 0
@@ -18719,13 +18732,43 @@ MonoBehaviour:
   healthText: {fileID: 787478010}
   armorText: {fileID: 718078304}
   ammoText: {fileID: 1190592989}
-  faceImage: {fileID: 1456174489}
-  faceSprites:
-  - {fileID: 1494593054, guid: 7e8b71903ac126142a3ba5cfe03f336c, type: 3}
-  - {fileID: 1678972614, guid: b216ac573d24f7d4a86c78913a5c29e7, type: 3}
-  - {fileID: -481235452, guid: 80fcceb05252a1145a142d5f04615766, type: 3}
-  - {fileID: -140295100, guid: 7d8cc1bc31b33af488669f8b4ac1d9a8, type: 3}
-  - {fileID: -829895452, guid: 499d691803eedec4fb8257a0418d36bc, type: 3}
+  faceAnimator: {fileID: 1456174492}
+  faceAnimations:
+  - stateName: Saudavel
+    frames:
+    - {fileID: -1777561618, guid: c12e52e9010f7564ebb08332c5cbc5f6, type: 3}
+    - {fileID: -1929658600, guid: cf7a4180156a3d74aa58ca20ce6036f9, type: 3}
+    - {fileID: 1118215157, guid: ed0af2e2f0c2a284887739d7d24302b2, type: 3}
+    framesPerSecond: 1
+    loop: 1
+  - stateName: LevementeMachucado
+    frames:
+    - {fileID: 472289891, guid: 92d246ce2e6f3ba44ac30cf994444829, type: 3}
+    - {fileID: 751107000, guid: 5f7fb7bce7a83f44697745a6472c1ec1, type: 3}
+    - {fileID: 2028849234, guid: d4444409a81a1294db699b14b9e01d12, type: 3}
+    framesPerSecond: 1
+    loop: 1
+  - stateName: Machucado
+    frames:
+    - {fileID: -372494219, guid: 1a717b974da84cc489435ba97fdbe947, type: 3}
+    - {fileID: -1562217219, guid: 968c5e2d502907f4f919ee117ddb041e, type: 3}
+    - {fileID: -1156223697, guid: 3ee82e0269de7d94a98e454d8279cb72, type: 3}
+    framesPerSecond: 1
+    loop: 1
+  - stateName: MuitoMachucado
+    frames:
+    - {fileID: 1714224147, guid: 5f46177541aa4b94ab41304f5ef9979e, type: 3}
+    - {fileID: -466534188, guid: 0154b7583fe3a524e94fbf814315aace, type: 3}
+    - {fileID: 859140618, guid: 9b97739678510344e9d9e390055c81c6, type: 3}
+    framesPerSecond: 1
+    loop: 1
+  - stateName: Morrendo
+    frames:
+    - {fileID: 322603756, guid: 6ac9efa3c53b0ea4fb5b21ac7926c309, type: 3}
+    - {fileID: 1196481138, guid: c1fe750dbf69a18408db750ad294d693, type: 3}
+    - {fileID: 1850218835, guid: c863319c7d6471140b104afbe4baa304, type: 3}
+    framesPerSecond: 1
+    loop: 1
 --- !u!4 &1490072345
 Transform:
   m_ObjectHideFlags: 0

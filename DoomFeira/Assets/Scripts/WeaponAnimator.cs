@@ -14,12 +14,12 @@ public class WeaponAnimator : MonoBehaviour
     }
 
     // Função para ser chamada pelo WeaponStats para configurar a animação
-    public void SetAnimationData(Sprite idle, Sprite[] shoot, float fireRate)
+    public void SetAnimationData(Sprite idle, Sprite[] shoot, float fps)
     {
         idleSprite = idle;
         shootFrames = shoot;
         // A velocidade da animação é baseada na cadência de tiro
-        animationSpeed = fireRate * 1.5f;
+        animationSpeed = fps;
     }
 
     // Inicia a animação de tiro
