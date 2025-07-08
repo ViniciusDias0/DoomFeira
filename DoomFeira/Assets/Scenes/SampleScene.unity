@@ -152,7 +152,7 @@ MonoBehaviour:
   - {fileID: 4991729512993522564, guid: a4f564ec4da480b4aa070121b7d753d1, type: 3}
   - {fileID: 1550829367431230638, guid: 7771a2a88fe01874da524912aa535859, type: 3}
   spawnInterval: 10
-  spawnAreaSize: {x: 51, y: 0.5, z: 51}
+  spawnAreaSize: {x: 50, y: 0, z: 50}
   maxItemsOnMap: 5
   obstacleLayer:
     serializedVersion: 2
@@ -168,7 +168,7 @@ Transform:
   m_GameObject: {fileID: 24565121}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 15, y: 1.06, z: 20.1}
+  m_LocalPosition: {x: 15, y: 0.42, z: 18.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -8827,7 +8827,7 @@ MonoBehaviour:
   - {fileID: 6470583162584400145, guid: 039abb60e4b0b634aa2fca3833c60615, type: 3}
   - {fileID: 6470583162584400145, guid: 10182caa95ce51d4abb224fbb0a6345c, type: 3}
   - {fileID: 6470583162584400145, guid: a3d330a4c12925f40bda93fcb173f112, type: 3}
-  spawnAreaSize: {x: 51, y: 1, z: 51}
+  spawnAreaSize: {x: 50, y: 0, z: 50}
   playerTransform: {fileID: 1366290411}
   playerSafeZoneRadius: 7
   initialSpawnInterval: 7
@@ -8845,7 +8845,7 @@ Transform:
   m_GameObject: {fileID: 830235415}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 15.1, y: 1.9, z: 20.3}
+  m_LocalPosition: {x: 15.1, y: 0.55, z: 19}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -12123,8 +12123,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41ed875aafecf974d88d66d1ca9aacae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  availableWeaponProfiles: []
-  spawnRadius: 30
+  availableWeaponProfiles:
+  - {fileID: 11400000, guid: 6ec51ec90c9d6e540aac70212317789b, type: 2}
+  - {fileID: 11400000, guid: 7b04d45a35b5be546a9302e4bbade772, type: 2}
+  - {fileID: 11400000, guid: b1ed4526798bf4d4fbe137b09071551e, type: 2}
+  - {fileID: 11400000, guid: f85a3229a87d1b54690d20266494b92c, type: 2}
+  spawnAreaSize: {x: 50, y: 0, z: 50}
   spawnInterval: 5
 --- !u!4 &1139870701
 Transform:
@@ -12135,7 +12139,7 @@ Transform:
   m_GameObject: {fileID: 1139870699}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.0028362, y: 1.73, z: 1.2}
+  m_LocalPosition: {x: 15.2, y: 0.42, z: 18.9}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -18685,8 +18689,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.000011444, y: -4.3634}
-  m_SizeDelta: {x: 148.7381, y: 113.3108}
+  m_AnchoredPosition: {x: -0.000011444, y: 1.252}
+  m_SizeDelta: {x: 148.738, y: 124.543}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1456174492
 MonoBehaviour:
