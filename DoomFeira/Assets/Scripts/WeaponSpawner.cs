@@ -4,12 +4,28 @@ using UnityEngine;
 public class WeaponSpawner : MonoBehaviour
 {
     [Header("Configuração de Spawn de Armas")]
-    // Agora só precisamos saber quais perfis de arma estão disponíveis
     public WeaponProfile[] availableWeaponProfiles;
 
+    // --- MUDANÇA: Substituímos o raio por um Vector3 para definir o tamanho da caixa ---
+    [Header("Área de Spawn (Paralelepípedo)")]
+    public Vector3 spawnAreaSize = new Vector3(40f, 1f, 40f); // Largura(X), Altura(Y), Comprimento(Z)
+
     [Header("Controle de Spawn")]
-    public float spawnRadius = 22f;
     public float spawnInterval = 15f;
+
+
+    // --- ADIÇÃO: A função que desenha o Gizmo no Editor ---
+    // Esta função especial da Unity é chamada automaticamente na janela Scene
+    void OnDrawGizmosSelected()
+    {
+        // Define a cor que o Gizmo terá. Usaremos um verde semitransparente.
+        Gizmos.color = new Color(0, 1, 0, 0.5f); // R, G, B, Alpha
+
+        // Desenha um cubo (paralelepípedo) na posição deste objeto, com o tamanho que definimos.
+        // Este Gizmo só será visível quando você selecionar o objeto Spawner na Hierarchy.
+        Gizmos.DrawCube(transform.position, spawnAreaSize);
+    }
+
 
     void Start()
     {
@@ -30,25 +46,36 @@ public class WeaponSpawner : MonoBehaviour
                 continue;
             }
 
-            // 1. Escolhe um PERFIL de arma aleatório
             int randomIndex = Random.Range(0, availableWeaponProfiles.Length);
             WeaponProfile randomProfile = availableWeaponProfiles[randomIndex];
 
-            // Garante que o perfil escolhido tem um prefab de pickup associado
             if (randomProfile.pickupPrefab == null)
             {
                 Debug.LogWarning($"O perfil '{randomProfile.name}' não tem um 'Pickup Prefab' definido.");
                 continue;
             }
 
-            // 2. Gera uma posição aleatória
-            Vector2 randomPointInCircle = Random.insideUnitCircle * spawnRadius;
-            Vector3 spawnPosition = new Vector3(randomPointInCircle.x, 1f, randomPointInCircle.y);
+            // --- MUDANÇA: Lógica de geração de posição ---
+            // Agora geramos um ponto dentro do nosso paralelepípedo
 
-            // 3. Cria uma instância do item de chão a partir do PERFIL
+            // Calcula a metade das dimensões para facilitar o cálculo do intervalo
+            float halfWidth = spawnAreaSize.x / 2;
+            float halfDepth = spawnAreaSize.z / 2;
+
+            // Gera um deslocamento aleatório a partir do centro do spawner
+            Vector3 randomOffset = new Vector3(
+                Random.Range(-halfWidth, halfWidth),
+                0, // Mantém o spawn na mesma altura Y do spawner
+                Random.Range(-halfDepth, halfDepth)
+            );
+
+            // A posição final é a posição do spawner mais o deslocamento aleatório
+            Vector3 spawnPosition = transform.position + randomOffset;
+            // --- FIM DA MUDANÇA ---
+
+
             GameObject pickupInstance = Instantiate(randomProfile.pickupPrefab, spawnPosition, Quaternion.identity);
 
-            // 4. (Opcional, mas seguro) Garante que o item criado sabe a qual perfil ele pertence
             WeaponPickup pickupScript = pickupInstance.GetComponent<WeaponPickup>();
             if (pickupScript != null)
             {

@@ -25,4 +25,8 @@ public class WeaponProfile : ScriptableObject
 
     [Header("Componentes")] // Movi os atributos para baixo para melhor organização
     public GameObject projectilePrefab;
+
+    [Tooltip("Se marcado, o 'Fire Rate' será ignorado e a cadência será ditada pela duração da animação de tiro.")]
+    public bool lockFireRateToAnimation = false;
+
 }
