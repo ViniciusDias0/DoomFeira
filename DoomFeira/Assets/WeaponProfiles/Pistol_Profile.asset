@@ -19,12 +19,14 @@ MonoBehaviour:
   - {fileID: 1761278607, guid: 8037bf1bdd3d28240b702bcd09c3e384, type: 3}
   - {fileID: -1585309209, guid: f57e004597108da4db7c0f946c9d3a6c, type: 3}
   - {fileID: 1684067763, guid: a0927cf51fb623d45a1c0e9a5313762e, type: 3}
+  shootAnimationFPS: 15
   pickupSprite: {fileID: 179975033, guid: f0744bac6685cb14197bf1ade79cb2e8, type: 3}
   damagePerShot: 75
   fireRate: 3
   projectileSpeed: 30
   projectilesPerShot: 1
   spreadAngle: 0
-  maxAmmo: 450
-  startingAmmo: 450
+  maxAmmo: 100
+  startingAmmo: 100
   projectilePrefab: {fileID: 2844178852169528482, guid: f5a58b809fee26743b5e40153a32a504, type: 3}
+  lockFireRateToAnimation: 0

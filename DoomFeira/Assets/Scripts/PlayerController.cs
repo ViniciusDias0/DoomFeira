@@ -6,9 +6,15 @@ public class PlayerController : MonoBehaviour
     [Header("Movimento e Tiro")]
     public float moveSpeed = 5f;
     public float rotationSpeed = 100f;
-    public float shootDistance = 100f;
-    public LayerMask shootableMask;
+    // ... suas outras variáveis de tiro, etc.
 
+    // --- ADIÇÕES PARA MOBILE ---
+    [Header("Controles Mobile")]
+    public Joystick movementJoystick; // Arraste o joystick de movimento aqui
+    private bool shooting = false; // Flag para saber se o botão de tiro está pressionado
+    // --- FIM DAS ADIÇÕES ---
+
+    // ... suas outras variáveis (status, HUD, head bob, etc.) ...
     [Header("Status do Jogador (usando float)")]
     public float maxHealth = 100f;
     public float currentHealth;
@@ -20,107 +26,122 @@ public class PlayerController : MonoBehaviour
     private Camera playerCamera;
 
     [Header("Efeitos da Câmera (Head Bob)")]
-    public bool enableHeadBob = true; // Para poder ligar/desligar o efeito facilmente
-    public float bobFrequency = 2.0f; // Quão rápido a cabeça balança (2 balanços por segundo)
-    public float bobHorizontalAmplitude = 0.1f; // O quanto a cabeça move para os lados
-    public float bobVerticalAmplitude = 0.1f; // O quanto a cabeça move para cima e para baixo
+    public bool enableHeadBob = true;
+    public float bobFrequency = 2.0f;
+    public float bobHorizontalAmplitude = 0.1f;
+    public float bobVerticalAmplitude = 0.1f;
 
     private float walkingTime = 0.0f;
-    private Vector3 cameraDefaultPosition; // Para sabermos a posição original da câmera
+    private Vector3 cameraDefaultPosition;
 
     [Header("Equipamento")]
     public WeaponStats currentWeapon;
 
     private Rigidbody rb;
+
     void Start()
     {
+        rb = GetComponent<Rigidbody>();
         playerCamera = GetComponentInChildren<Camera>();
-        rb = GetComponent<Rigidbody>(); // Pega o componente Rigidbody no mesmo objeto
 
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        // No mobile, não precisamos travar o cursor
+        // Cursor.lockState = CursorLockMode.Locked;
+        // Cursor.visible = false;
 
+        if (movementJoystick == null)
+        {
+            Debug.LogError("Joystick de movimento não foi definido no PlayerController! Controles mobile não funcionarão.");
+        }
+
+        // ... resto do seu código de Start ...
         currentHealth = maxHealth;
-        currentArmor = 0f; // Começa sem armadura
-
-        // Atualiza a HUD pela primeira vez
-        if (hudManager != null)
-        {
-            hudManager.UpdateStatus((int)currentHealth, (int)currentArmor);
-        }
-
-        playerCamera = GetComponentInChildren<Camera>(); // Você já deve ter esta linha
-
-        // GUARDA A POSIÇÃO INICIAL DA CÂMERA
-        if (playerCamera != null)
-        {
-            cameraDefaultPosition = playerCamera.transform.localPosition;
-        }
-        if (rb == null)
-        {
-            Debug.LogError("PlayerController precisa de um componente Rigidbody para funcionar!");
-        }
-
+        currentArmor = 0f;
+        if (hudManager != null) hudManager.UpdateStatus((int)currentHealth, (int)currentArmor);
+        if (playerCamera != null) cameraDefaultPosition = playerCamera.transform.localPosition;
     }
 
     void Update()
     {
-        HandleShooting();
-        HandleDebugInputs();
-
-        HandleHeadBob();
-    }
-    // FixedUpdate é o lugar correto para toda a lógica de física.
-    void FixedUpdate()
-    {
-        // Pega os inputs do teclado
-        float moveVertical = Input.GetAxis("Vertical");
-        float rotationHorizontal = Input.GetAxis("Horizontal");
-
-        // --- ROTAÇÃO ---
-        // Cria uma rotação baseada no input horizontal
-        Quaternion deltaRotation = Quaternion.Euler(Vector3.up * rotationHorizontal * rotationSpeed * Time.fixedDeltaTime);
-        // Aplica a rotação ao Rigidbody. Isso é mais suave e seguro para física.
-        rb.MoveRotation(rb.rotation * deltaRotation);
-
-        // --- MOVIMENTO ---
-        // Calcula o vetor de movimento para frente, relativo à rotação atual do jogador
-        Vector3 moveDirection = transform.forward * moveVertical * moveSpeed * Time.fixedDeltaTime;
-        // Aplica o movimento ao Rigidbody, respeitando as colisões
-        rb.MovePosition(rb.position + moveDirection);
-    }
-    private void HandleMovement()
-    {
-        float moveVertical = Input.GetAxis("Vertical");
-        transform.Translate(Vector3.forward * moveVertical * moveSpeed * Time.deltaTime);
-
-        float rotationHorizontal = Input.GetAxis("Horizontal");
-        transform.Rotate(Vector3.up * rotationHorizontal * rotationSpeed * Time.deltaTime);
-    }
-
-    private void HandleShooting()
-    {
-        if (Input.GetKey(KeyCode.Space))
+        // A lógica de tiro agora é baseada na nossa flag 'shooting'
+        if (shooting)
         {
             Shoot();
         }
+
+        HandleDebugInputs(); // Pode manter para testar no PC
+        HandleHeadBob();
     }
 
-    private void HandleDebugInputs()
+    void FixedUpdate()
     {
-        // Aperte 'T' para tomar 10 de dano
-        if (Input.GetKeyDown(KeyCode.T))
-        {
-            TakeDamage(10f); // Usamos 10f para ser consistente com o tipo float
-        }
+        // --- LÓGICA DE MOVIMENTO E ROTAÇÃO MODIFICADA ---
+        if (movementJoystick == null) return; // Não faz nada se o joystick não estiver configurado
 
-        // Aperte 'Y' para pegar 25 de armadura
-        if (Input.GetKeyDown(KeyCode.Y))
+        // Pega os inputs diretamente do joystick
+        // O joystick de movimento controlará tanto o andar quanto o girar
+        float moveVertical = movementJoystick.Vertical; // Para frente e para trás
+        float rotationHorizontal = movementJoystick.Horizontal; // Para girar para os lados
+
+        // ROTAÇÃO
+        Quaternion deltaRotation = Quaternion.Euler(Vector3.up * rotationHorizontal * rotationSpeed * Time.fixedDeltaTime);
+        rb.MoveRotation(rb.rotation * deltaRotation);
+
+        // MOVIMENTO
+        Vector3 moveDirection = transform.forward * moveVertical * moveSpeed * Time.fixedDeltaTime;
+        rb.MovePosition(rb.position + moveDirection);
+    }
+
+    // --- NOVAS FUNÇÕES PÚBLICAS PARA OS BOTÕES ---
+    // Esta função será chamada quando o botão de tiro for PRESSIONADO
+    public void OnShootButtonDown()
+    {
+        shooting = true;
+    }
+
+    // Esta função será chamada quando o botão de tiro for SOLTO
+    public void OnShootButtonUp()
+    {
+        shooting = false;
+    }
+    // --- FIM DAS NOVAS FUNÇÕES ---
+
+    // A função HandleHeadBob precisa ler os inputs do joystick agora
+    private void HandleHeadBob()
+    {
+        if (!enableHeadBob || movementJoystick == null) return;
+
+        // Pega os inputs do joystick
+        float horizontalInput = movementJoystick.Horizontal;
+        float verticalInput = movementJoystick.Vertical;
+
+        // O resto da lógica do Head Bob permanece a mesma
+        if (Mathf.Abs(horizontalInput) > 0.1f || Mathf.Abs(verticalInput) > 0.1f)
         {
-            AddArmor(25f); // Usamos 25f
+            walkingTime += Time.deltaTime;
+            float horizontalOffset = Mathf.Cos(walkingTime * bobFrequency) * bobHorizontalAmplitude;
+            float verticalOffset = Mathf.Sin(walkingTime * bobFrequency * 2) * bobVerticalAmplitude;
+            playerCamera.transform.localPosition = new Vector3(
+                cameraDefaultPosition.x + horizontalOffset,
+                cameraDefaultPosition.y + verticalOffset,
+                cameraDefaultPosition.z
+            );
+        }
+        else
+        {
+            walkingTime = 0;
+            playerCamera.transform.localPosition = Vector3.Lerp(
+                playerCamera.transform.localPosition,
+                cameraDefaultPosition,
+                Time.deltaTime * 5f
+            );
         }
     }
 
+    // O resto dos seus scripts (TakeDamage, Heal, Die, etc.) não precisam de alteração
+    // ...
+    // (Cole o resto das suas funções aqui)
+    // ...
+    #region FuncoesDeStatus
     public void TakeDamage(float damage)
     {
         float damageToArmor = Mathf.Min(currentArmor, damage);
@@ -131,13 +152,7 @@ public class PlayerController : MonoBehaviour
 
         currentHealth = Mathf.Clamp(currentHealth, 0f, maxHealth);
 
-        Debug.Log($"Dano recebido! Vida: {currentHealth}, Armadura: {currentArmor}");
         UpdateHud();
-
-        if (hudManager != null)
-        {
-            hudManager.UpdateStatus((int)currentHealth, (int)currentArmor);
-        }
 
         if (currentHealth <= 0)
         {
@@ -147,41 +162,17 @@ public class PlayerController : MonoBehaviour
 
     public bool Heal(float amount)
     {
-        if (currentHealth >= maxHealth)
-        {
-            return false;
-        }
-
-        currentHealth += amount;
-        currentHealth = Mathf.Clamp(currentHealth, 0f, maxHealth);
-        Debug.Log($"Jogador curou {amount} de vida. Vida: {currentHealth}");
+        if (currentHealth >= maxHealth) return false;
+        currentHealth = Mathf.Clamp(currentHealth + amount, 0f, maxHealth);
         UpdateHud();
-
-        if (hudManager != null)
-        {
-            hudManager.UpdateStatus((int)currentHealth, (int)currentArmor);
-        }
-
         return true;
     }
 
     public bool AddArmor(float amount)
     {
-        if (currentArmor >= maxArmor)
-        {
-            return false;
-        }
-
-        currentArmor += amount;
-        currentArmor = Mathf.Clamp(currentArmor, 0f, maxArmor);
-        Debug.Log($"Jogador pegou {amount} de armadura. Armadura: {currentArmor}");
+        if (currentArmor >= maxArmor) return false;
+        currentArmor = Mathf.Clamp(currentArmor + amount, 0f, maxArmor);
         UpdateHud();
-
-        if (hudManager != null)
-        {
-            hudManager.UpdateStatus((int)currentHealth, (int)currentArmor);
-        }
-
         return true;
     }
 
@@ -193,7 +184,6 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    // --- A ÚNICA ALTERAÇÃO FOI FEITA AQUI ---
     private void Die()
     {
         // A lógica antiga de reiniciar a cena foi substituída pela nova lógica
@@ -202,59 +192,15 @@ public class PlayerController : MonoBehaviour
 
         FindObjectOfType<GameOverTrigger>().TriggerGameOver();
     }
-    // --- FIM DA ALTERAÇÃO ---
 
-    // Função central para atualizar o HUD, para não repetir código
     private void UpdateHud()
     {
         if (hudManager != null)
         {
-            // CORREÇÃO: Usando o novo nome da função
             hudManager.UpdateStatus((int)currentHealth, (int)currentArmor);
         }
     }
 
-    // Adicione esta nova função ao PlayerController.cs
-    private void HandleHeadBob()
-    {
-        // Se o efeito estiver desligado, não faz nada
-        if (!enableHeadBob) return;
-
-        // Pega a entrada de movimento horizontal e vertical
-        float horizontalInput = Input.GetAxis("Horizontal");
-        float verticalInput = Input.GetAxis("Vertical");
-
-        if (Mathf.Abs(horizontalInput) > 0.1f || Mathf.Abs(verticalInput) > 0.1f)
-        {
-            // JOGADOR ESTÁ SE MOVENDO
-
-            // Incrementa o tempo de caminhada, que será usado na função de seno
-            walkingTime += Time.deltaTime;
-
-            // Calcula os deslocamentos usando a função Seno para um movimento suave e oscilante
-            float horizontalOffset = Mathf.Cos(walkingTime * bobFrequency) * bobHorizontalAmplitude;
-            float verticalOffset = Mathf.Sin(walkingTime * bobFrequency * 2) * bobVerticalAmplitude; // Multiplicamos por 2 para que o movimento vertical seja mais rápido (passo cima-baixo)
-
-            // Aplica o deslocamento à posição padrão da câmera
-            playerCamera.transform.localPosition = new Vector3(
-                cameraDefaultPosition.x + horizontalOffset,
-                cameraDefaultPosition.y + verticalOffset,
-                cameraDefaultPosition.z
-            );
-        }
-        else
-        {
-            // JOGADOR ESTÁ PARADO
-
-            // Reseta o tempo de caminhada
-            walkingTime = 0;
-
-            // Suaviza o retorno da câmera para a posição padrão usando Lerp
-            playerCamera.transform.localPosition = Vector3.Lerp(
-                playerCamera.transform.localPosition,
-                cameraDefaultPosition,
-                Time.deltaTime * 5f
-            );
-        }
-    }
+    private void HandleDebugInputs() { }
+    #endregion
 }
