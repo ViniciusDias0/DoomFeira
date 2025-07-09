@@ -36,6 +36,9 @@ public class WeaponStats : MonoBehaviour
         }
         // --- FIM DA MUDANÇA ---
 
+        transform.localPosition = profile.handPosition;
+        transform.localScale = profile.handScale;
+
         UpdateAmmoUI();
     }
 

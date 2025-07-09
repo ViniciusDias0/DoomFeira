@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pickupPrefab: {fileID: 885473237835425761, guid: fa11e2a6b287ccc40a9666ef429a7552, type: 3}
   weaponName: Minigun
-  handSprite: {fileID: 0}
+  handSprite: {fileID: -683416711, guid: f9809327393a055439a74fd0f69b3a53, type: 3}
   shootAnimationFrames: []
   shootAnimationFPS: 15
-  pickupSprite: {fileID: 0}
+  pickupSprite: {fileID: -683416711, guid: f9809327393a055439a74fd0f69b3a53, type: 3}
   damagePerShot: 90
   fireRate: 60
   projectileSpeed: 30
@@ -25,5 +25,7 @@ MonoBehaviour:
   spreadAngle: 0
   maxAmmo: 300
   startingAmmo: 300
+  handPosition: {x: 0, y: -0.3, z: 1}
+  handScale: {x: 1, y: 1, z: 1}
   projectilePrefab: {fileID: 2844178852169528482, guid: f5a58b809fee26743b5e40153a32a504, type: 3}
   lockFireRateToAnimation: 0

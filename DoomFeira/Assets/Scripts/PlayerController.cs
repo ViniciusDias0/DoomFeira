@@ -1,20 +1,14 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
     [Header("Movimento e Tiro")]
     public float moveSpeed = 5f;
     public float rotationSpeed = 100f;
-    // ... suas outras variáveis de tiro, etc.
 
-    // --- ADIÇÕES PARA MOBILE ---
-    [Header("Controles Mobile")]
-    public Joystick movementJoystick; // Arraste o joystick de movimento aqui
-    private bool shooting = false; // Flag para saber se o botão de tiro está pressionado
-    // --- FIM DAS ADIÇÕES ---
+    // ... Remova as referências do joystick daqui ...
 
-    // ... suas outras variáveis (status, HUD, head bob, etc.) ...
+    // ... Suas outras variáveis (status, HUD, etc.) ...
     [Header("Status do Jogador (usando float)")]
     public float maxHealth = 100f;
     public float currentHealth;
@@ -44,16 +38,7 @@ public class PlayerController : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         playerCamera = GetComponentInChildren<Camera>();
 
-        // No mobile, não precisamos travar o cursor
-        // Cursor.lockState = CursorLockMode.Locked;
-        // Cursor.visible = false;
-
-        if (movementJoystick == null)
-        {
-            Debug.LogError("Joystick de movimento não foi definido no PlayerController! Controles mobile não funcionarão.");
-        }
-
-        // ... resto do seu código de Start ...
+        // ... O resto do seu Start pode permanecer o mesmo, mas a lógica do cursor agora é do InputManager ...
         currentHealth = maxHealth;
         currentArmor = 0f;
         if (hudManager != null) hudManager.UpdateStatus((int)currentHealth, (int)currentArmor);
@@ -62,59 +47,40 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        // A lógica de tiro agora é baseada na nossa flag 'shooting'
-        if (shooting)
+        // Agora só precisamos checar o InputManager
+        if (InputManager.Instance.IsShooting)
         {
             Shoot();
         }
-
-        HandleDebugInputs(); // Pode manter para testar no PC
         HandleHeadBob();
     }
 
     void FixedUpdate()
     {
-        // --- LÓGICA DE MOVIMENTO E ROTAÇÃO MODIFICADA ---
-        if (movementJoystick == null) return; // Não faz nada se o joystick não estiver configurado
+        // Pega os inputs diretamente do InputManager
+        float moveVertical = InputManager.Instance.VerticalAxis;
+        float rotationHorizontal = InputManager.Instance.HorizontalAxis;
 
-        // Pega os inputs diretamente do joystick
-        // O joystick de movimento controlará tanto o andar quanto o girar
-        float moveVertical = movementJoystick.Vertical; // Para frente e para trás
-        float rotationHorizontal = movementJoystick.Horizontal; // Para girar para os lados
-
-        // ROTAÇÃO
+        // O resto da sua lógica de movimento permanece a mesma
         Quaternion deltaRotation = Quaternion.Euler(Vector3.up * rotationHorizontal * rotationSpeed * Time.fixedDeltaTime);
         rb.MoveRotation(rb.rotation * deltaRotation);
 
-        // MOVIMENTO
         Vector3 moveDirection = transform.forward * moveVertical * moveSpeed * Time.fixedDeltaTime;
         rb.MovePosition(rb.position + moveDirection);
     }
 
-    // --- NOVAS FUNÇÕES PÚBLICAS PARA OS BOTÕES ---
-    // Esta função será chamada quando o botão de tiro for PRESSIONADO
-    public void OnShootButtonDown()
-    {
-        shooting = true;
-    }
+    // As funções OnShootButtonDown/Up não são mais necessárias aqui
 
-    // Esta função será chamada quando o botão de tiro for SOLTO
-    public void OnShootButtonUp()
-    {
-        shooting = false;
-    }
-    // --- FIM DAS NOVAS FUNÇÕES ---
-
-    // A função HandleHeadBob precisa ler os inputs do joystick agora
     private void HandleHeadBob()
     {
-        if (!enableHeadBob || movementJoystick == null) return;
+        if (!enableHeadBob) return;
 
-        // Pega os inputs do joystick
-        float horizontalInput = movementJoystick.Horizontal;
-        float verticalInput = movementJoystick.Vertical;
+        // Pega os inputs do InputManager
+        float horizontalInput = InputManager.Instance.HorizontalAxis;
+        float verticalInput = InputManager.Instance.VerticalAxis;
 
         // O resto da lógica do Head Bob permanece a mesma
+        // ...
         if (Mathf.Abs(horizontalInput) > 0.1f || Mathf.Abs(verticalInput) > 0.1f)
         {
             walkingTime += Time.deltaTime;
@@ -137,10 +103,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    // O resto dos seus scripts (TakeDamage, Heal, Die, etc.) não precisam de alteração
-    // ...
-    // (Cole o resto das suas funções aqui)
-    // ...
+    // ... O resto das suas funções (TakeDamage, Heal, Die, etc.) não precisam de alteração ...
     #region FuncoesDeStatus
     public void TakeDamage(float damage)
     {
@@ -190,6 +153,8 @@ public class PlayerController : MonoBehaviour
         // que chama o sistema de Game Over. A lógica do Debug.Log pode ser mantida.
         Debug.Log("O jogador morreu! Acionando o sistema de Game Over...");
 
+
+
         FindObjectOfType<GameOverTrigger>().TriggerGameOver();
     }
 
@@ -200,7 +165,5 @@ public class PlayerController : MonoBehaviour
             hudManager.UpdateStatus((int)currentHealth, (int)currentArmor);
         }
     }
-
-    private void HandleDebugInputs() { }
     #endregion
 }

@@ -14,7 +14,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pickupPrefab: {fileID: 765961509601326450, guid: 70856d59d031236459720b30f3c7a4d6, type: 3}
   weaponName: Bazooka
-  weaponSprite: {fileID: -2026535004, guid: e1d0573c9cf664748bcabdfdd1dece51, type: 3}
+  handSprite: {fileID: 1898245063, guid: 532cb705658e7684eb58051b8c64816a, type: 3}
+  shootAnimationFrames:
+  - {fileID: 1898245063, guid: 532cb705658e7684eb58051b8c64816a, type: 3}
+  - {fileID: -836400553, guid: b83294c740b3b994781de5c69d5c99fc, type: 3}
+  - {fileID: -2050134187, guid: 6cb9026edcab2224ab3dc7d9b03630c8, type: 3}
+  - {fileID: -81972427, guid: d732562454353484a8b8fa42efc36a25, type: 3}
+  - {fileID: 514330939, guid: 37db6e1c3485a0547acc0b274961b453, type: 3}
+  - {fileID: 1328372448, guid: 6f51e007c6796aa4ab93d2c2acf26d87, type: 3}
+  - {fileID: -1654677380, guid: 54cbf845843e23447b6909f001d2ccba, type: 3}
+  - {fileID: -1449367234, guid: 8c3fdc2581475574fa1019ee73716516, type: 3}
+  shootAnimationFPS: 15
+  pickupSprite: {fileID: 537398160, guid: 51105bf35e08d364f9cd69d7370c2058, type: 3}
   damagePerShot: 500
   fireRate: 0.5
   projectileSpeed: 30
@@ -22,4 +33,7 @@ MonoBehaviour:
   spreadAngle: 0
   maxAmmo: 4
   startingAmmo: 4
+  handPosition: {x: 0.003, y: -0.437, z: 1}
+  handScale: {x: 0.631, y: 0.5959, z: 1}
   projectilePrefab: {fileID: 3485942960392533794, guid: 9def71deac69a1347bfbca39c4ab47f1, type: 3}
+  lockFireRateToAnimation: 0

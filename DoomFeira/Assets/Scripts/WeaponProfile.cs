@@ -23,6 +23,12 @@ public class WeaponProfile : ScriptableObject
     public int maxAmmo = 100;
     public int startingAmmo = 50;
 
+    [Header("Posicionamento na Mão")]
+    [Tooltip("A posição da arma em relação à câmera.")]
+    public Vector3 handPosition = new Vector3(0, -0.3f, 1f);
+    [Tooltip("A escala da arma na mão.")]
+    public Vector3 handScale = Vector3.one; // Vector3.one é o mesmo que (1, 1, 1)
+
     [Header("Componentes")] // Movi os atributos para baixo para melhor organização
     public GameObject projectilePrefab;
 
