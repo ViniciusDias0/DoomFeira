@@ -1,14 +1,16 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+// A linha abaixo pode ser removida se você não a estiver usando mais.
+// using UnityEngine.Experimental.Rendering;
+
 public class PlayerController : MonoBehaviour
 {
     [Header("Movimento e Tiro")]
     public float moveSpeed = 5f;
     public float rotationSpeed = 100f;
-    public float shootDistance = 100f;
-    public LayerMask shootableMask;
 
+    // ... Suas outras variáveis (status, HUD, etc.) permanecem as mesmas ...
     [Header("Status do Jogador (usando float)")]
     public float maxHealth = 100f;
     public float currentHealth;
@@ -19,7 +21,7 @@ public class PlayerController : MonoBehaviour
     public HUDManager hudManager;
     private Camera playerCamera;
 
-    [Header("Efeitos da C�mera (Head Bob)")]
+    [Header("Efeitos da Câmera (Head Bob)")]
     public bool enableHeadBob = true;
     public float bobFrequency = 2.0f;
     public float bobHorizontalAmplitude = 0.1f;
@@ -31,12 +33,29 @@ public class PlayerController : MonoBehaviour
     [Header("Equipamento")]
     public WeaponStats currentWeapon;
 
+    // --- ADIÇÃO CRUCIAL ---
+    private Rigidbody rb;
+    // --- FIM DA ADIÇÃO ---
+
 
     void Start()
     {
+        // --- ADIÇÃO CRUCIAL ---
+        // Pega o componente Rigidbody no mesmo objeto
+        rb = GetComponent<Rigidbody>();
+        if (rb == null)
+        {
+            Debug.LogError("PlayerController precisa de um componente Rigidbody para funcionar!", this.gameObject);
+            this.enabled = false;
+            return;
+        }
+        // --- FIM DA ADIÇÃO ---
+
         playerCamera = GetComponentInChildren<Camera>();
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+
+        // A lógica do cursor é controlada pelo InputManager, então podemos remover isso daqui.
+        // Cursor.lockState = CursorLockMode.Locked;
+        // Cursor.visible = false;
 
         currentHealth = maxHealth;
         currentArmor = 0f;
@@ -46,40 +65,48 @@ public class PlayerController : MonoBehaviour
             hudManager.UpdateStatus((int)currentHealth, (int)currentArmor);
         }
 
-        playerCamera = GetComponentInChildren<Camera>();
-
         if (playerCamera != null)
         {
             cameraDefaultPosition = playerCamera.transform.localPosition;
         }
-
     }
 
-    // --- A CORRE��O EST� AQUI ---
     void Update()
     {
-        // Se o InputManager n�o existir por algum motivo, n�o faz nada.
         if (InputManager.Instance == null) return;
 
-        // A l�gica de movimento e tiro agora � chamada em TODOS os frames.
-        // O InputManager � quem decide de onde vem o input (teclado ou joystick).
-        HandleMovement();
+        // A lógica de tiro e efeitos visuais permanece em Update()
         HandleShooting();
-
-        // Os inputs de debug e headbob continuam funcionando normalmente.
         HandleDebugInputs();
         HandleHeadBob();
     }
-    // --- FIM DA CORRE��O ---
 
-    private void HandleMovement()
+    // --- NOVA FUNÇÃO E LÓGICA DE MOVIMENTO ---
+    // FixedUpdate é chamada em um intervalo de tempo fixo, ideal para física.
+    void FixedUpdate()
     {
-        float moveVertical = InputManager.Instance.VerticalAxis;
-        transform.Translate(Vector3.forward * moveVertical * moveSpeed * Time.deltaTime);
+        if (InputManager.Instance == null) return;
 
-        float rotationHorizontal = InputManager.Instance.HorizontalAxis;
-        transform.Rotate(Vector3.up * rotationHorizontal * rotationSpeed * Time.deltaTime);
+        // Pega os inputs diretamente do InputManager.
+        float moveVertical = InputManager.Instance.VerticalAxis;
+        float rotationHorizontal = InputManager.Instance.HorizontalAxis; // <<-- A rotação SEMPRE virá daqui agora.
+
+        // --- LÓGICA DE MOVIMENTO E ROTAÇÃO CORRIGIDA PARA O ESTILO DOOM ---
+
+        // ROTAÇÃO:
+        // Usa o input horizontal (Setas Esquerda/Direita ou joystick) para girar o jogador.
+        Quaternion deltaRotation = Quaternion.Euler(Vector3.up * rotationHorizontal * rotationSpeed * Time.fixedDeltaTime);
+        rb.MoveRotation(rb.rotation * deltaRotation);
+
+        // MOVIMENTO PARA FRENTE/TRÁS:
+        // Usa o input vertical (Setas Cima/Baixo ou joystick) para mover para frente e para trás.
+        Vector3 targetVelocity = transform.forward * moveVertical * moveSpeed;
+        targetVelocity.y = rb.linearVelocity.y; // Mantém a velocidade vertical atual (gravidade).
+        rb.linearVelocity = targetVelocity;
     }
+    // --- FIM DA NOVA LÓGICA DE MOVIMENTO ---
+
+    // A sua função HandleMovement() antiga pode ser DELETADA, pois foi substituída por FixedUpdate.
 
     private void HandleShooting()
     {
@@ -88,6 +115,7 @@ public class PlayerController : MonoBehaviour
             Shoot();
         }
     }
+
 
     private void HandleDebugInputs()
     {
