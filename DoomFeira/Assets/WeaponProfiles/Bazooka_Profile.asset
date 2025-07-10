@@ -31,8 +31,8 @@ MonoBehaviour:
   projectileSpeed: 30
   projectilesPerShot: 1
   spreadAngle: 0
-  maxAmmo: 4
-  startingAmmo: 4
+  maxAmmo: 20
+  startingAmmo: 20
   handPosition: {x: -0.007, y: -0.399, z: 1}
   handScale: {x: 0.4778563, y: 0.4707014, z: 1}
   projectilePrefab: {fileID: 2844178852169528482, guid: 96f71f291d074ec4fa9dda3046ab46ff, type: 3}
