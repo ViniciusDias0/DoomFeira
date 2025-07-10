@@ -14,18 +14,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pickupPrefab: {fileID: 885473237835425761, guid: fa11e2a6b287ccc40a9666ef429a7552, type: 3}
   weaponName: Minigun
-  handSprite: {fileID: -683416711, guid: f9809327393a055439a74fd0f69b3a53, type: 3}
-  shootAnimationFrames: []
-  shootAnimationFPS: 15
-  pickupSprite: {fileID: -683416711, guid: f9809327393a055439a74fd0f69b3a53, type: 3}
+  handSprite: {fileID: -1892208855, guid: 74d3d7fd2d525e24c91390d9116d57ae, type: 3}
+  shootAnimationFrames:
+  - {fileID: -1892208855, guid: 74d3d7fd2d525e24c91390d9116d57ae, type: 3}
+  - {fileID: 678217293, guid: f69809f75b1fd194489f70b4017b97d4, type: 3}
+  - {fileID: 1417636351, guid: a2187bd6818819743a8fc013af40e151, type: 3}
+  - {fileID: 4639923, guid: e6773d0731e79a5428c91be659059c18, type: 3}
+  - {fileID: 1735812674, guid: 64b553370e0900b4383ad92cf54765d6, type: 3}
+  shootAnimationFPS: 60
+  pickupSprite: {fileID: 711235500, guid: 8f57606f44451b649a59d3ecdfdf475f, type: 3}
   damagePerShot: 90
-  fireRate: 60
+  fireRate: 12
   projectileSpeed: 30
   projectilesPerShot: 1
   spreadAngle: 0
   maxAmmo: 300
   startingAmmo: 300
-  handPosition: {x: 0, y: -0.3, z: 1}
-  handScale: {x: 1, y: 1, z: 1}
+  handPosition: {x: -0.07, y: -0.51, z: 1.75}
+  handScale: {x: 0.2938664, y: 0.3742975, z: 1}
   projectilePrefab: {fileID: 2844178852169528482, guid: f5a58b809fee26743b5e40153a32a504, type: 3}
   lockFireRateToAnimation: 0

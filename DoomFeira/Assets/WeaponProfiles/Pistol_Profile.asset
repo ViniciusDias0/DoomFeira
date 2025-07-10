@@ -28,5 +28,7 @@ MonoBehaviour:
   spreadAngle: 0
   maxAmmo: 100
   startingAmmo: 100
+  handPosition: {x: -0.118, y: -0.365, z: 1}
+  handScale: {x: 0.4244632, y: 0.3954515, z: 1}
   projectilePrefab: {fileID: 2844178852169528482, guid: f5a58b809fee26743b5e40153a32a504, type: 3}
   lockFireRateToAnimation: 0

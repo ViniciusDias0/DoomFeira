@@ -28,6 +28,12 @@ public class PlayerController : MonoBehaviour
     private float walkingTime = 0.0f;
     private Vector3 cameraDefaultPosition;
 
+    [Header("Controle de Queda")]
+    [Tooltip("A altura Y abaixo da qual o jogador morre.")]
+    public float fallThreshold = -50f;
+
+    private bool isDead = false;
+
     [Header("Equipamento")]
     public WeaponStats currentWeapon;
 
@@ -53,6 +59,18 @@ public class PlayerController : MonoBehaviour
             Shoot();
         }
         HandleHeadBob();
+
+        if (isDead) return;
+
+        // --- ADIÇÃO AQUI ---
+        // Verifica a cada frame se a posição Y do jogador está abaixo do limite.
+        if (transform.position.y < fallThreshold)
+        {
+            isDead = true; // Marca como morto para não chamar de novo.
+            Debug.Log("Jogador caiu no vácuo! Acionando Game Over...");
+            Die(); // Chama a sua função de morte existente.
+            return; // Para a execução do Update para este frame.
+        }
     }
 
     void FixedUpdate()
@@ -121,6 +139,8 @@ public class PlayerController : MonoBehaviour
         {
             Die();
         }
+
+        if (isDead) return;
     }
 
     public bool Heal(float amount)
@@ -149,13 +169,11 @@ public class PlayerController : MonoBehaviour
 
     private void Die()
     {
-        // A lógica antiga de reiniciar a cena foi substituída pela nova lógica
-        // que chama o sistema de Game Over. A lógica do Debug.Log pode ser mantida.
+        if (isDead) return;
+
+        isDead = true;
         Debug.Log("O jogador morreu! Acionando o sistema de Game Over...");
-
-
-
-        FindObjectOfType<GameOverTrigger>().TriggerGameOver();
+        FindAnyObjectByType<GameOverTrigger>().TriggerGameOver();
     }
 
     private void UpdateHud()

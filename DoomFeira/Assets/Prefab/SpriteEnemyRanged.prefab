@@ -209,7 +209,7 @@ MonoBehaviour:
   health: 150
   pointsValue: 600
   stoppingDistance: 10
-  projectilePrefab: {fileID: 3485942960392533794, guid: 2c489896e840a3a4b99b6b9c7e13dce5, type: 3}
+  projectilePrefab: {fileID: 2844178852169528482, guid: 004d9047dddb96f43963335d7c60d5b4, type: 3}
   firePoint: {fileID: 3184205683144801107}
   fireRate: 2
   animator: {fileID: 7316335865921242996}

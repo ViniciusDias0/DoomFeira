@@ -27,8 +27,8 @@ Transform:
   m_GameObject: {fileID: 39855355154144116}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.054, y: 0.101, z: 0}
-  m_LocalScale: {x: 1.0737807, y: 1.1412069, z: 1}
+  m_LocalPosition: {x: 0.002, y: -0.026, z: 0}
+  m_LocalScale: {x: 0.60582703, y: 0.6813005, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8450560865512933947}
@@ -77,7 +77,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: -690169671, guid: dd7a82e79fa91094b993787c4232512d, type: 3}
+  m_Sprite: {fileID: 1726265348, guid: 4a9d1c8cf3928914c9d217df8308e34a, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -109,11 +109,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8450560865512933947}
-  - component: {fileID: 5905551243943402169}
   - component: {fileID: 3767951788603522257}
   - component: {fileID: 1116626249098086568}
+  - component: {fileID: 5233333093839602705}
   m_Layer: 11
-  m_Name: PlayerProjectile_2D
+  m_Name: EnemyProjectile_2D
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -135,21 +135,6 @@ Transform:
   - {fileID: 720610150572742134}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5905551243943402169
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2844178852169528482}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 19bb6854f0e29994ea15b871e9482914, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  damage: 50
-  speed: 1
-  lifetime: 3
 --- !u!54 &3767951788603522257
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -198,3 +183,18 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &5233333093839602705
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2844178852169528482}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7612170e3a145204f91cfe212203b01a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 5
+  damage: 25
+  lifetime: 5

@@ -3,21 +3,21 @@ using UnityEngine.SceneManagement;
 
 public class InputManager : MonoBehaviour
 {
+    // ... (suas variáveis e Singleton) ...
     public static InputManager Instance { get; private set; }
-
     public enum ControlScheme { PC, Mobile }
     public ControlScheme currentScheme;
-
     private GameObject mobileControlsUI;
     private Joystick movementJoystick;
-
     public float VerticalAxis { get; private set; }
     public float HorizontalAxis { get; private set; }
     public float MouseX { get; private set; }
     public bool IsShooting { get; private set; }
 
+
     void Awake()
     {
+        // ... (seu código Awake permanece o mesmo) ...
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
@@ -26,17 +26,13 @@ public class InputManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
-        // Se inscreve para "ouvir" o evento de carregamento de cena.
         SceneManager.sceneLoaded += OnSceneLoaded;
-
-        // Carrega a preferência, mas não aplica o cursor ainda.
         currentScheme = (ControlScheme)PlayerPrefs.GetInt("ControlScheme", 0);
     }
 
-    // Função chamada toda vez que uma nova cena termina de carregar.
+    // ... (OnSceneLoaded permanece a mesma) ...
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // Procura os componentes da UI na nova cena, se necessário.
         if (currentScheme == ControlScheme.Mobile)
         {
             mobileControlsUI = GameObject.Find("MobileControlsContainer");
@@ -45,56 +41,39 @@ public class InputManager : MonoBehaviour
                 movementJoystick = mobileControlsUI.GetComponentInChildren<Joystick>();
             }
         }
-
-        // Aplica o esquema de controle, passando o NOME da cena atual.
         ApplyScheme(scene.name);
     }
 
-    // --- FUNÇÃO MODIFICADA PARA CONSIDERAR A CENA ---
-    private void ApplyScheme(string sceneName)
-    {
-        bool isMobile = currentScheme == ControlScheme.Mobile;
-
-        if (mobileControlsUI != null)
-        {
-            mobileControlsUI.SetActive(isMobile);
-        }
-
-        // --- LÓGICA DO CURSOR CORRIGIDA ---
-        // VERIFIQUE SE O NOME DA SUA CENA DE MENU É "MenuScene". Se for diferente, mude aqui.
-        if (sceneName == "MainMenuScene")
-        {
-            // Se estivermos na cena do menu, o cursor SEMPRE estará livre e visível.
-            Cursor.visible = true;
-            Cursor.lockState = CursorLockMode.None;
-        }
-        else // Para qualquer outra cena (a do jogo)
-        {
-            // A lógica de travar/esconder o cursor só se aplica se o modo NÃO for mobile.
-            Cursor.visible = isMobile;
-            Cursor.lockState = isMobile ? CursorLockMode.None : CursorLockMode.Locked;
-        }
-    }
-
-    // A função SetControlScheme agora está mais simples, pois ApplyScheme será chamada ao carregar a cena.
-    public void SetControlScheme(int schemeIndex)
-    {
-        currentScheme = (ControlScheme)schemeIndex;
-        PlayerPrefs.SetInt("ControlScheme", schemeIndex);
-        Debug.Log("Esquema de controle definido para: " + (ControlScheme)schemeIndex);
-    }
-
-    // O resto do seu código (Update, ReadInputs, etc.) permanece exatamente o mesmo.
-    #region FuncoesRestantes
     void Update()
     {
+        // --- ADIÇÃO CRUCIAL AQUI ---
+        // Verifica a cada frame se estamos na cena do menu.
+        if (SceneManager.GetActiveScene().name == "MainMenuScene") // <<-- Use o nome exato da sua cena de menu
+        {
+            // Se estivermos no menu, FORÇA o cursor a ficar visível e destravado.
+            if (Cursor.lockState != CursorLockMode.None)
+            {
+                Cursor.lockState = CursorLockMode.None;
+            }
+            if (!Cursor.visible)
+            {
+                Cursor.visible = true;
+            }
+        }
+        // --- FIM DA ADIÇÃO ---
+
+
+        // O resto da sua lógica de Update continua normalmente
         switch (currentScheme)
         {
             case ControlScheme.PC: ReadPCInput(); break;
-            case ControlScheme.Mobile: ReadMobileInput(); break;
+            case ControlScheme.Mobile: ReadMobileInput(); break; // <<-- LINHA CORRIGIDA
         }
     }
 
+    // O resto das suas funções (ApplyScheme, SetControlScheme, ReadInputs, etc.) permanece exatamente o mesmo.
+    // Você não precisa mudar mais nada.
+    #region FuncoesRestantes
     private void ReadPCInput()
     {
         VerticalAxis = Input.GetAxis("Vertical");
@@ -112,6 +91,34 @@ public class InputManager : MonoBehaviour
         }
         else { VerticalAxis = 0; HorizontalAxis = 0; }
         MouseX = 0;
+    }
+
+    private void ApplyScheme(string sceneName)
+    {
+        bool isMobile = currentScheme == ControlScheme.Mobile;
+
+        if (mobileControlsUI != null)
+        {
+            mobileControlsUI.SetActive(isMobile);
+        }
+
+        if (sceneName == "MainMenuScene")
+        {
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+        }
+        else
+        {
+            Cursor.visible = isMobile;
+            Cursor.lockState = isMobile ? CursorLockMode.None : CursorLockMode.Locked;
+        }
+    }
+
+    public void SetControlScheme(int schemeIndex)
+    {
+        currentScheme = (ControlScheme)schemeIndex;
+        PlayerPrefs.SetInt("ControlScheme", schemeIndex);
+        ApplyScheme(SceneManager.GetActiveScene().name);
     }
 
     public void SetShooting(bool isShooting)
