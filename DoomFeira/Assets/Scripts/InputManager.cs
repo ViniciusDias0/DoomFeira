@@ -1,23 +1,24 @@
+// InputManager.cs (Versão Final com Conexão Automática de UI)
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
+using TMPro; // <<< --- ADIÇÃO ESSENCIAL para encontrar o TMP_Dropdown
 
 public class InputManager : MonoBehaviour
 {
-    // ... (suas variáveis e Singleton) ...
     public static InputManager Instance { get; private set; }
+
     public enum ControlScheme { PC, Mobile }
     public ControlScheme currentScheme;
-    private GameObject mobileControlsUI;
-    private Joystick movementJoystick;
+
     public float VerticalAxis { get; private set; }
     public float HorizontalAxis { get; private set; }
-    public float MouseX { get; private set; }
     public bool IsShooting { get; private set; }
 
+    private Joystick movementJoystick;
 
     void Awake()
     {
-        // ... (seu código Awake permanece o mesmo) ...
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
@@ -25,60 +26,127 @@ public class InputManager : MonoBehaviour
         }
         Instance = this;
         DontDestroyOnLoad(gameObject);
-
-        SceneManager.sceneLoaded += OnSceneLoaded;
         currentScheme = (ControlScheme)PlayerPrefs.GetInt("ControlScheme", 0);
     }
 
-    // ... (OnSceneLoaded permanece a mesma) ...
+    void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    // Chamado toda vez que uma cena é carregada
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (currentScheme == ControlScheme.Mobile)
+        // Se a cena for a do menu, configura o dropdown.
+        if (scene.name == "MainMenuScene") // Use o nome exato da sua cena de menu
         {
-            mobileControlsUI = GameObject.Find("MobileControlsContainer");
-            if (mobileControlsUI != null)
-            {
-                movementJoystick = mobileControlsUI.GetComponentInChildren<Joystick>();
-            }
+            SetupMainMenuDropdown();
         }
-        ApplyScheme(scene.name);
+
+        // Aplica o esquema correto para a cena atual.
+        ApplyCurrentScheme();
     }
 
     void Update()
     {
-        // --- ADIÇÃO CRUCIAL AQUI ---
-        // Verifica a cada frame se estamos na cena do menu.
-        if (SceneManager.GetActiveScene().name == "MainMenuScene") // <<-- Use o nome exato da sua cena de menu
+        if (currentScheme == ControlScheme.PC) ReadPCInput();
+        else ReadMobileInput();
+    }
+
+    // Função chamada pelo Dropdown do menu
+    public void SetControlScheme(int schemeIndex)
+    {
+        currentScheme = (ControlScheme)schemeIndex;
+        PlayerPrefs.SetInt("ControlScheme", schemeIndex);
+        ApplyCurrentScheme();
+    }
+
+    // Função central que configura TUDO
+    private void ApplyCurrentScheme()
+    {
+        bool isMobile = (currentScheme == ControlScheme.Mobile);
+
+        GameObject mobileControlsContainer = GameObject.Find("MobileControlsContainer");
+        if (mobileControlsContainer != null)
         {
-            // Se estivermos no menu, FORÇA o cursor a ficar visível e destravado.
-            if (Cursor.lockState != CursorLockMode.None)
+            mobileControlsContainer.SetActive(isMobile);
+            if (isMobile)
             {
-                Cursor.lockState = CursorLockMode.None;
-            }
-            if (!Cursor.visible)
-            {
-                Cursor.visible = true;
+                movementJoystick = mobileControlsContainer.GetComponentInChildren<Joystick>();
+                SetupMobileAttackButton();
             }
         }
-        // --- FIM DA ADIÇÃO ---
 
-
-        // O resto da sua lógica de Update continua normalmente
-        switch (currentScheme)
+        if (SceneManager.GetActiveScene().name == "MainMenuScene")
         {
-            case ControlScheme.PC: ReadPCInput(); break;
-            case ControlScheme.Mobile: ReadMobileInput(); break; // <<-- LINHA CORRIGIDA
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
+        else
+        {
+            Cursor.lockState = isMobile ? CursorLockMode.None : CursorLockMode.Locked;
+            Cursor.visible = isMobile;
         }
     }
 
-    // O resto das suas funções (ApplyScheme, SetControlScheme, ReadInputs, etc.) permanece exatamente o mesmo.
-    // Você não precisa mudar mais nada.
-    #region FuncoesRestantes
+    // --- NOVA FUNÇÃO QUE RESOLVE O PROBLEMA DO MENU ---
+    private void SetupMainMenuDropdown()
+    {
+        // Encontra o dropdown na cena. Certifique-se que o nome do seu Dropdown é "Dropdown".
+        // Se tiver outro nome, mude o nome aqui no código.
+        TMP_Dropdown dropdown = FindObjectOfType<TMP_Dropdown>();
+
+        if (dropdown != null)
+        {
+            // Limpa qualquer conexão antiga (feita pelo Inspector).
+            dropdown.onValueChanged.RemoveAllListeners();
+            // Conecta o dropdown à nossa função SetControlScheme.
+            dropdown.onValueChanged.AddListener(SetControlScheme);
+            // Atualiza o valor do dropdown para mostrar a seleção atual.
+            dropdown.SetValueWithoutNotify((int)currentScheme);
+
+            Debug.Log("Dropdown do menu configurado automaticamente!");
+        }
+        else
+        {
+            Debug.LogWarning("Dropdown não encontrado na cena do menu.");
+        }
+    }
+
+    private void SetupMobileAttackButton()
+    {
+        GameObject attackButtonObject = GameObject.Find("Atacar");
+        if (attackButtonObject == null) return;
+
+        EventTrigger trigger = attackButtonObject.GetComponent<EventTrigger>() ?? attackButtonObject.AddComponent<EventTrigger>();
+        trigger.triggers.Clear();
+
+        EventTrigger.Entry pointerDownEntry = new EventTrigger.Entry { eventID = EventTriggerType.PointerDown };
+        pointerDownEntry.callback.AddListener((data) => { SetShooting(true); });
+        trigger.triggers.Add(pointerDownEntry);
+
+        EventTrigger.Entry pointerUpEntry = new EventTrigger.Entry { eventID = EventTriggerType.PointerUp };
+        pointerUpEntry.callback.AddListener((data) => { SetShooting(false); });
+        trigger.triggers.Add(pointerUpEntry);
+    }
+
+    public void SetShooting(bool isShooting)
+    {
+        if (currentScheme == ControlScheme.Mobile)
+        {
+            IsShooting = isShooting;
+        }
+    }
+
     private void ReadPCInput()
     {
         VerticalAxis = Input.GetAxis("Vertical");
         HorizontalAxis = Input.GetAxis("Horizontal");
-        MouseX = Input.GetAxis("Mouse X");
         IsShooting = Input.GetKey(KeyCode.Space);
     }
 
@@ -90,45 +158,5 @@ public class InputManager : MonoBehaviour
             HorizontalAxis = movementJoystick.Horizontal;
         }
         else { VerticalAxis = 0; HorizontalAxis = 0; }
-        MouseX = 0;
     }
-
-    private void ApplyScheme(string sceneName)
-    {
-        bool isMobile = currentScheme == ControlScheme.Mobile;
-
-        if (mobileControlsUI != null)
-        {
-            mobileControlsUI.SetActive(isMobile);
-        }
-
-        if (sceneName == "MainMenuScene")
-        {
-            Cursor.visible = true;
-            Cursor.lockState = CursorLockMode.None;
-        }
-        else
-        {
-            Cursor.visible = isMobile;
-            Cursor.lockState = isMobile ? CursorLockMode.None : CursorLockMode.Locked;
-        }
-    }
-
-    public void SetControlScheme(int schemeIndex)
-    {
-        currentScheme = (ControlScheme)schemeIndex;
-        PlayerPrefs.SetInt("ControlScheme", schemeIndex);
-        ApplyScheme(SceneManager.GetActiveScene().name);
-    }
-
-    public void SetShooting(bool isShooting)
-    {
-        if (currentScheme == ControlScheme.Mobile) IsShooting = isShooting;
-    }
-
-    void OnDestroy()
-    {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
-    }
-    #endregion
 }

@@ -1,6 +1,5 @@
-// GameOverController.cs
 using UnityEngine;
-using UnityEngine.SceneManagement; // Essencial para carregar cenas
+using UnityEngine.SceneManagement;
 using TMPro;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +17,6 @@ public class GameOverController : MonoBehaviour
     [Header("Configuração")]
     public string mainMenuSceneName = "MainMenuScene";
 
-    // Variáveis internas
     private int playerFinalScore;
     private char[] currentName = { 'A', 'A', 'A' };
     private int currentLetterIndex = 0;
@@ -31,30 +29,23 @@ public class GameOverController : MonoBehaviour
         playerFinalScore = ScoreData.PlayerScore;
         finalScoreText.text = $"SUA PONTUAÇÃO: {playerFinalScore}";
         rankingText.text = "CARREGANDO...";
-
         await LoadRankingAndCheckForHighScore();
     }
 
-    // --- INÍCIO DA ALTERAÇÃO 1 ---
-    // A função Update agora tem duas responsabilidades distintas
     void Update()
     {
-        // 1. Se o painel de nome está ativo, estamos em "modo de digitação".
         if (nameEntryPanel.activeSelf)
         {
             HandleNameInput();
         }
-        // 2. Senão, estamos em "modo de visualização do ranking".
         else
         {
-            // Neste modo, a tecla Espaço leva de volta ao menu.
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 GoToMainMenu();
             }
         }
     }
-    // --- FIM DA ALTERAÇÃO 1 ---
 
     async Task LoadRankingAndCheckForHighScore()
     {
@@ -63,53 +54,33 @@ public class GameOverController : MonoBehaviour
             rankingText.text = "ERRO DE CONEXÃO";
             return;
         }
-
         List<ScoreEntry> topScores = await FirebaseManager.Instance.GetTopScores();
-
-        // Vamos construir o texto do ranking aqui
         StringBuilder sb = new StringBuilder("--- HALL OF FAME ---\n\n");
         for (int i = 0; i < topScores.Count; i++)
         {
             sb.AppendLine($"{(i + 1)}. {topScores[i].name}   {topScores[i].score}");
         }
-
-        // Verificamos se é um novo recorde
         bool isNewHighScore = ScoreData.HasNewScore && (topScores.Count < 10 || playerFinalScore > topScores.Last().score);
-
         if (isNewHighScore)
         {
-            // Se for, ativamos o painel de nome e não adicionamos a instrução de voltar.
             nameEntryPanel.SetActive(true);
             UpdateNameInputDisplay();
         }
-        // --- INÍCIO DA ALTERAÇÃO 2 ---
         else
         {
-            // Se não for um novo recorde (ou se já salvamos), adicionamos a instrução.
             sb.Append("\n\nPRESSIONE ESPAÇO PARA VOLTAR AO MENU");
         }
-        // --- FIM DA ALTERAÇÃO 2 ---
-
-        // Atualiza o texto na tela com o resultado final
         rankingText.text = sb.ToString();
         ScoreData.HasNewScore = false;
     }
 
     private void HandleNameInput()
     {
-        if (Input.GetKeyDown(KeyCode.RightArrow)) currentLetterIndex = (currentLetterIndex + 1) % 3;
-        else if (Input.GetKeyDown(KeyCode.LeftArrow)) currentLetterIndex = (currentLetterIndex - 1 + 3) % 3;
-        else if (Input.GetKeyDown(KeyCode.UpArrow)) charIndices[currentLetterIndex] = (charIndices[currentLetterIndex] + 1) % alphabet.Length;
-        else if (Input.GetKeyDown(KeyCode.DownArrow)) charIndices[currentLetterIndex] = (charIndices[currentLetterIndex] - 1 + alphabet.Length) % alphabet.Length;
-        else if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return))
-        {
-            SubmitScore();
-            return;
-        }
-        else return;
-
-        currentName[currentLetterIndex] = alphabet[charIndices[currentLetterIndex]];
-        UpdateNameInputDisplay();
+        if (Input.GetKeyDown(KeyCode.RightArrow)) MoveToNextLetter();
+        else if (Input.GetKeyDown(KeyCode.LeftArrow)) MoveToPreviousLetter();
+        else if (Input.GetKeyDown(KeyCode.UpArrow)) ChangeCharacterUp();
+        else if (Input.GetKeyDown(KeyCode.DownArrow)) ChangeCharacterDown();
+        else if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return)) SubmitScore();
     }
 
     private void UpdateNameInputDisplay()
@@ -126,18 +97,52 @@ public class GameOverController : MonoBehaviour
     {
         nameEntryPanel.SetActive(false);
         string finalName = new string(currentName);
-
-        // Envia o novo recorde para o Firebase.
         await FirebaseManager.Instance.AddScore(finalName, playerFinalScore);
-
-        // Recarrega o ranking. A função agora irá automaticamente adicionar a
-        // instrução "Pressione espaço para voltar".
         await LoadRankingAndCheckForHighScore();
     }
 
-    // Esta função carrega a cena do menu principal.
     public void GoToMainMenu()
     {
         SceneManager.LoadScene(mainMenuSceneName);
     }
+
+    // --- INÍCIO DAS NOVAS FUNÇÕES PARA OS BOTÕES ---
+
+    // Chame esta função no botão da seta para a DIREITA
+    public void MoveToNextLetter()
+    {
+        currentLetterIndex = (currentLetterIndex + 1) % 3;
+        UpdateNameInputDisplay();
+    }
+
+    // Chame esta função no botão da seta para a ESQUERDA
+    public void MoveToPreviousLetter()
+    {
+        currentLetterIndex = (currentLetterIndex - 1 + 3) % 3;
+        UpdateNameInputDisplay();
+    }
+
+    // Chame esta função no botão da seta para CIMA
+    public void ChangeCharacterUp()
+    {
+        charIndices[currentLetterIndex] = (charIndices[currentLetterIndex] + 1) % alphabet.Length;
+        currentName[currentLetterIndex] = alphabet[charIndices[currentLetterIndex]];
+        UpdateNameInputDisplay();
+    }
+
+    // Chame esta função no botão da seta para BAIXO
+    public void ChangeCharacterDown()
+    {
+        charIndices[currentLetterIndex] = (charIndices[currentLetterIndex] - 1 + alphabet.Length) % alphabet.Length;
+        currentName[currentLetterIndex] = alphabet[charIndices[currentLetterIndex]];
+        UpdateNameInputDisplay();
+    }
+
+    // Chame esta função no botão de CONFIRMAR ou OK
+    public void ConfirmName()
+    {
+        SubmitScore();
+    }
+
+    // --- FIM DAS NOVAS FUNÇÕES PARA OS BOTÕES ---
 }
