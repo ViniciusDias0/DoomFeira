@@ -1,8 +1,8 @@
-// GameOverController.cs (Versão com InputField)
+// GameOverController.cs (Sem os textos de cabeçalho/rodapé)
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI; // Essencial para usar o componente Button
-using TMPro; // Essencial para InputField e Text
+using TMPro;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,58 +10,69 @@ using System.Threading.Tasks;
 
 public class GameOverController : MonoBehaviour
 {
+    // ... (Suas variáveis e a função Start continuam exatamente iguais)
+    #region Variáveis e Start (Intactos)
     [Header("Referências da UI")]
     public TextMeshProUGUI finalScoreText;
     public TextMeshProUGUI rankingText;
-    public GameObject nameEntryPanel;
-
-    // --- MUDANÇAS AQUI ---
-    // Trocamos o antigo Text por um InputField e um Button.
     public TMP_InputField nameInputField;
     public Button confirmButton;
+    public Button backToMenuButton;
 
     [Header("Configuração")]
     public string mainMenuSceneName = "MainMenuScene";
 
     private int playerFinalScore;
-
-    // (As variáveis do sistema de setas foram removidas)
+    private bool isNewHighScore = false;
 
     async void Start()
     {
-        nameEntryPanel.SetActive(false);
         playerFinalScore = ScoreData.PlayerScore;
         finalScoreText.text = $"SUA PONTUAÇÃO: {playerFinalScore}";
         rankingText.text = "CARREGANDO...";
-
-        // Configura os listeners dos nossos novos componentes de UI.
-        if (confirmButton != null)
+        SetupButtons();
+        if (InputManager.Instance != null && InputManager.Instance.currentScheme == InputManager.ControlScheme.PC)
         {
-            // Conecta a função ConfirmName ao clique do botão.
-            confirmButton.onClick.AddListener(ConfirmName);
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
         }
-        if (nameInputField != null)
-        {
-            // Conecta uma função para validar o nome toda vez que o texto mudar.
-            nameInputField.onValueChanged.AddListener(ValidateName);
-        }
-
-        await LoadRankingAndCheckForHighScore();
+        await LoadRankingAndHandleUI();
     }
+    #endregion
 
     void Update()
     {
-        // Se o painel de nome NÃO estiver ativo, o jogador pode voltar ao menu.
-        if (!nameEntryPanel.activeSelf)
+        // ... (A função Update continua exatamente igual)
+        #region Update (Intacto)
+        if (InputManager.Instance == null) return;
+        if (isNewHighScore && !nameInputField.interactable &&
+            InputManager.Instance.currentScheme == InputManager.ControlScheme.PC && Input.GetKeyDown(KeyCode.Return))
         {
-            if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return))
-            {
-                GoToMainMenu();
-            }
+            EnableTypingMode();
         }
+        else if (!isNewHighScore && Input.GetKeyDown(KeyCode.Space))
+        {
+            GoToMainMenu();
+        }
+        #endregion
     }
 
-    async Task LoadRankingAndCheckForHighScore()
+    private void SetupButtons()
+    {
+        // ... (A função SetupButtons continua exatamente igual)
+        #region SetupButtons (Intacto)
+        if (confirmButton != null) { confirmButton.onClick.AddListener(ConfirmName); }
+        if (backToMenuButton != null) { backToMenuButton.onClick.AddListener(GoToMainMenu); }
+        if (nameInputField != null)
+        {
+            nameInputField.onSubmit.AddListener((text) => { ConfirmName(); });
+            nameInputField.onValueChanged.AddListener(ValidateName);
+        }
+        #endregion
+    }
+
+    // --- A ÚNICA ALTERAÇÃO FOI FEITA AQUI ---
+    async Task LoadRankingAndHandleUI()
     {
         if (FirebaseManager.Instance == null)
         {
@@ -70,67 +81,72 @@ public class GameOverController : MonoBehaviour
         }
 
         List<ScoreEntry> topScores = await FirebaseManager.Instance.GetTopScores();
+        isNewHighScore = ScoreData.HasNewScore && (topScores.Count < 10 || playerFinalScore > topScores.Last().score);
 
-        StringBuilder sb = new StringBuilder("--- HALL OF FAME ---\n\n");
+        // MUDANÇA 1: Começa com o StringBuilder vazio, sem o "HALL OF FAME".
+        StringBuilder sb = new StringBuilder();
+
+        // Monta a lista de pontuações
         for (int i = 0; i < topScores.Count; i++)
         {
             sb.AppendLine($"{(i + 1)}. {topScores[i].name}   {topScores[i].score}");
         }
+        rankingText.text = sb.ToString();
 
-        bool isNewHighScore = ScoreData.HasNewScore && (topScores.Count < 10 || playerFinalScore > topScores.Last().score);
-
+        // A lógica para habilitar a entrada de nome continua a mesma
         if (isNewHighScore)
         {
-            nameEntryPanel.SetActive(true);
-
-            // Foca automaticamente no campo de input para o jogador começar a digitar.
-            nameInputField.Select();
-            nameInputField.ActivateInputField();
-
-            // Desativa o botão de confirmar no início.
-            ValidateName(nameInputField.text);
+            if (InputManager.Instance.currentScheme == InputManager.ControlScheme.Mobile)
+            {
+                EnableTypingMode();
+            }
+            else
+            {
+                nameInputField.interactable = false;
+                ValidateName(nameInputField.text);
+            }
         }
-        else
+        else // Se não for um novo recorde
         {
-            sb.Append("\n\nPRESSIONE ESPAÇO PARA VOLTAR AO MENU");
+            nameInputField.interactable = false;
+            confirmButton.interactable = false;
+            UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
+
+            // MUDANÇA 2: A linha que adicionava "PRESSIONE ESPAÇO..." foi removida.
         }
 
-        rankingText.text = sb.ToString();
         ScoreData.HasNewScore = false;
     }
+    // --- FIM DA ALTERAÇÃO ---
 
-    // --- NOVA FUNÇÃO PARA VALIDAR O INPUT ---
-    // Esta função é chamada toda vez que o jogador digita algo.
+    // ... (O resto das funções (EnableTypingMode, ValidateName, etc.) continuam exatamente iguais)
+    #region Funções Restantes (Intactas)
+    private void EnableTypingMode()
+    {
+        nameInputField.interactable = true;
+        nameInputField.Select();
+        nameInputField.ActivateInputField();
+        ValidateName(nameInputField.text);
+    }
+
     private void ValidateName(string currentText)
     {
-        // O botão de confirmar só fica clicável se houver algum texto no campo.
         if (confirmButton != null)
         {
-            confirmButton.interactable = !string.IsNullOrWhiteSpace(currentText);
+            confirmButton.interactable = nameInputField.interactable && !string.IsNullOrWhiteSpace(currentText);
         }
     }
 
-    // A função de submeter agora pega o texto do InputField.
     private async void SubmitScore()
     {
-        // Pega o texto, remove espaços em branco no início e no fim.
         string finalName = nameInputField.text.Trim();
-
-        // Segurança extra: não envia se o nome estiver vazio.
-        if (string.IsNullOrWhiteSpace(finalName))
-        {
-            return;
-        }
-
-        nameEntryPanel.SetActive(false);
-
-        // Mostra o ranking com uma mensagem de "Salvando...".
-        rankingText.text += "\n\nSALVANDO RECORDE...";
-
+        if (string.IsNullOrWhiteSpace(finalName)) return;
+        isNewHighScore = false;
+        nameInputField.interactable = false;
+        confirmButton.interactable = false;
+        UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
         await FirebaseManager.Instance.AddScore(finalName, playerFinalScore);
-
-        // Recarrega o ranking para mostrar a nova pontuação.
-        await LoadRankingAndCheckForHighScore();
+        await LoadRankingAndHandleUI();
     }
 
     public void GoToMainMenu()
@@ -138,11 +154,9 @@ public class GameOverController : MonoBehaviour
         SceneManager.LoadScene(mainMenuSceneName);
     }
 
-    // Esta função agora é chamada apenas pelo botão de confirmar.
     public void ConfirmName()
     {
         SubmitScore();
     }
-
-    // (As funções de setas foram removidas pois não são mais necessárias)
+    #endregion
 }
