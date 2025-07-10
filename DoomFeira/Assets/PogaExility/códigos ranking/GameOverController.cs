@@ -1,6 +1,8 @@
+// GameOverController.cs (Versão com InputField)
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using TMPro;
+using UnityEngine.UI; // Essencial para usar o componente Button
+using TMPro; // Essencial para InputField e Text
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,16 +14,18 @@ public class GameOverController : MonoBehaviour
     public TextMeshProUGUI finalScoreText;
     public TextMeshProUGUI rankingText;
     public GameObject nameEntryPanel;
-    public TextMeshProUGUI nameInputText;
+
+    // --- MUDANÇAS AQUI ---
+    // Trocamos o antigo Text por um InputField e um Button.
+    public TMP_InputField nameInputField;
+    public Button confirmButton;
 
     [Header("Configuração")]
     public string mainMenuSceneName = "MainMenuScene";
 
     private int playerFinalScore;
-    private char[] currentName = { 'A', 'A', 'A' };
-    private int currentLetterIndex = 0;
-    private const string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    private int[] charIndices = { 0, 0, 0 };
+
+    // (As variáveis do sistema de setas foram removidas)
 
     async void Start()
     {
@@ -29,18 +33,28 @@ public class GameOverController : MonoBehaviour
         playerFinalScore = ScoreData.PlayerScore;
         finalScoreText.text = $"SUA PONTUAÇÃO: {playerFinalScore}";
         rankingText.text = "CARREGANDO...";
+
+        // Configura os listeners dos nossos novos componentes de UI.
+        if (confirmButton != null)
+        {
+            // Conecta a função ConfirmName ao clique do botão.
+            confirmButton.onClick.AddListener(ConfirmName);
+        }
+        if (nameInputField != null)
+        {
+            // Conecta uma função para validar o nome toda vez que o texto mudar.
+            nameInputField.onValueChanged.AddListener(ValidateName);
+        }
+
         await LoadRankingAndCheckForHighScore();
     }
 
     void Update()
     {
-        if (nameEntryPanel.activeSelf)
+        // Se o painel de nome NÃO estiver ativo, o jogador pode voltar ao menu.
+        if (!nameEntryPanel.activeSelf)
         {
-            HandleNameInput();
-        }
-        else
-        {
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return))
             {
                 GoToMainMenu();
             }
@@ -54,50 +68,68 @@ public class GameOverController : MonoBehaviour
             rankingText.text = "ERRO DE CONEXÃO";
             return;
         }
+
         List<ScoreEntry> topScores = await FirebaseManager.Instance.GetTopScores();
+
         StringBuilder sb = new StringBuilder("--- HALL OF FAME ---\n\n");
         for (int i = 0; i < topScores.Count; i++)
         {
             sb.AppendLine($"{(i + 1)}. {topScores[i].name}   {topScores[i].score}");
         }
+
         bool isNewHighScore = ScoreData.HasNewScore && (topScores.Count < 10 || playerFinalScore > topScores.Last().score);
+
         if (isNewHighScore)
         {
             nameEntryPanel.SetActive(true);
-            UpdateNameInputDisplay();
+
+            // Foca automaticamente no campo de input para o jogador começar a digitar.
+            nameInputField.Select();
+            nameInputField.ActivateInputField();
+
+            // Desativa o botão de confirmar no início.
+            ValidateName(nameInputField.text);
         }
         else
         {
             sb.Append("\n\nPRESSIONE ESPAÇO PARA VOLTAR AO MENU");
         }
+
         rankingText.text = sb.ToString();
         ScoreData.HasNewScore = false;
     }
 
-    private void HandleNameInput()
+    // --- NOVA FUNÇÃO PARA VALIDAR O INPUT ---
+    // Esta função é chamada toda vez que o jogador digita algo.
+    private void ValidateName(string currentText)
     {
-        if (Input.GetKeyDown(KeyCode.RightArrow)) MoveToNextLetter();
-        else if (Input.GetKeyDown(KeyCode.LeftArrow)) MoveToPreviousLetter();
-        else if (Input.GetKeyDown(KeyCode.UpArrow)) ChangeCharacterUp();
-        else if (Input.GetKeyDown(KeyCode.DownArrow)) ChangeCharacterDown();
-        else if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return)) SubmitScore();
-    }
-
-    private void UpdateNameInputDisplay()
-    {
-        StringBuilder displayName = new StringBuilder();
-        for (int i = 0; i < 3; i++)
+        // O botão de confirmar só fica clicável se houver algum texto no campo.
+        if (confirmButton != null)
         {
-            displayName.Append(i == currentLetterIndex ? $"<color=yellow>{currentName[i]}</color>" : currentName[i].ToString());
+            confirmButton.interactable = !string.IsNullOrWhiteSpace(currentText);
         }
-        nameInputText.text = displayName.ToString();
     }
 
+    // A função de submeter agora pega o texto do InputField.
     private async void SubmitScore()
     {
+        // Pega o texto, remove espaços em branco no início e no fim.
+        string finalName = nameInputField.text.Trim();
+
+        // Segurança extra: não envia se o nome estiver vazio.
+        if (string.IsNullOrWhiteSpace(finalName))
+        {
+            return;
+        }
+
         nameEntryPanel.SetActive(false);
-        string finalName = new string(currentName);
+
+        // Mostra o ranking com uma mensagem de "Salvando...".
+        rankingText.text += "\n\nSALVANDO RECORDE...";
+
         await FirebaseManager.Instance.AddScore(finalName, playerFinalScore);
+
+        // Recarrega o ranking para mostrar a nova pontuação.
         await LoadRankingAndCheckForHighScore();
     }
 
@@ -106,43 +138,11 @@ public class GameOverController : MonoBehaviour
         SceneManager.LoadScene(mainMenuSceneName);
     }
 
-    // --- INÍCIO DAS NOVAS FUNÇÕES PARA OS BOTÕES ---
-
-    // Chame esta função no botão da seta para a DIREITA
-    public void MoveToNextLetter()
-    {
-        currentLetterIndex = (currentLetterIndex + 1) % 3;
-        UpdateNameInputDisplay();
-    }
-
-    // Chame esta função no botão da seta para a ESQUERDA
-    public void MoveToPreviousLetter()
-    {
-        currentLetterIndex = (currentLetterIndex - 1 + 3) % 3;
-        UpdateNameInputDisplay();
-    }
-
-    // Chame esta função no botão da seta para CIMA
-    public void ChangeCharacterUp()
-    {
-        charIndices[currentLetterIndex] = (charIndices[currentLetterIndex] + 1) % alphabet.Length;
-        currentName[currentLetterIndex] = alphabet[charIndices[currentLetterIndex]];
-        UpdateNameInputDisplay();
-    }
-
-    // Chame esta função no botão da seta para BAIXO
-    public void ChangeCharacterDown()
-    {
-        charIndices[currentLetterIndex] = (charIndices[currentLetterIndex] - 1 + alphabet.Length) % alphabet.Length;
-        currentName[currentLetterIndex] = alphabet[charIndices[currentLetterIndex]];
-        UpdateNameInputDisplay();
-    }
-
-    // Chame esta função no botão de CONFIRMAR ou OK
+    // Esta função agora é chamada apenas pelo botão de confirmar.
     public void ConfirmName()
     {
         SubmitScore();
     }
 
-    // --- FIM DAS NOVAS FUNÇÕES PARA OS BOTÕES ---
+    // (As funções de setas foram removidas pois não são mais necessárias)
 }
