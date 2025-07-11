@@ -66,7 +66,7 @@ public class InputManager : MonoBehaviour
         // 2. Lê os novos valores.
         VerticalAxis = Input.GetAxis("Vertical");
         HorizontalAxis = Input.GetAxis("Horizontal");
-        IsShooting = Input.GetKey(KeyCode.Space);
+        IsShooting = Input.GetMouseButton(0);
         LookX = Input.GetAxis("Mouse X");
         LookY = Input.GetAxis("Mouse Y");
     }

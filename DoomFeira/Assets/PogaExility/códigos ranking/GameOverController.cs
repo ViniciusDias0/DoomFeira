@@ -92,4 +92,14 @@ public class GameOverController : MonoBehaviour
     {
         SceneManager.LoadScene(mainMenuSceneName);
     }
+    // Adicione esta função inteira ao seu script GameOverController.cs
+    void Update()
+    {
+        // Verifica a cada frame se a tecla Espaço foi pressionada.
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            // Se foi, chama a função que já existe para voltar ao menu.
+            GoToMainMenu();
+        }
+    }
 }
