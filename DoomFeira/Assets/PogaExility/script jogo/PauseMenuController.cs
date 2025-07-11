@@ -1,15 +1,16 @@
-// PauseMenuController.cs
+// PauseMenuController.cs (Versão Final Corrigida)
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using TMPro;
+using System.Globalization;
 
 public class PauseMenuController : MonoBehaviour
 {
     [Header("Referências da UI")]
     public GameObject pauseMenuPanel;
-    public Slider sensitivitySlider;
-    public TextMeshProUGUI sensitivityValueText;
+    public TMP_InputField sensitivityInputField;
+
     public Button openPauseButton;
     public Button resumeButton;
     public Button giveUpButton;
@@ -31,7 +32,11 @@ public class PauseMenuController : MonoBehaviour
         if (openPauseButton != null) openPauseButton.onClick.AddListener(PauseGame);
         if (resumeButton != null) resumeButton.onClick.AddListener(ResumeGame);
         if (giveUpButton != null) giveUpButton.onClick.AddListener(GiveUpAndQuit);
-        if (sensitivitySlider != null) sensitivitySlider.onValueChanged.AddListener(OnSensitivityChanged);
+
+        if (sensitivityInputField != null)
+        {
+            sensitivityInputField.onEndEdit.AddListener(OnSensitivityChanged);
+        }
 
         LoadSensitivity();
     }
@@ -76,24 +81,44 @@ public class PauseMenuController : MonoBehaviour
         }
     }
 
-    private void OnSensitivityChanged(float value)
+    // --- CORREÇÃO PRINCIPAL AQUI ---
+    // Agora chama a função correta: SetLookSensitivity()
+    private void OnSensitivityChanged(string newTextValue)
     {
-        if (playerController != null)
+        if (float.TryParse(newTextValue.Replace(',', '.'), NumberStyles.Any, CultureInfo.InvariantCulture, out float sensitivityValue))
         {
-            playerController.SetLookSensitivity(value);
+            if (playerController != null)
+            {
+                // ANTES (ERRADO): playerController.rotationSpeed = sensitivityValue;
+                // DEPOIS (CORRETO): Chama a função pública que criamos para isso.
+                playerController.SetLookSensitivity(sensitivityValue);
+            }
+
+            PlayerPrefs.SetFloat("MouseSensitivity", sensitivityValue);
+            Debug.Log($"Sensibilidade alterada para: {sensitivityValue}");
+            sensitivityInputField.text = sensitivityValue.ToString(CultureInfo.InvariantCulture);
         }
-        if (sensitivityValueText != null)
+        else
         {
-            sensitivityValueText.text = value.ToString("F0");
+            LoadSensitivity();
         }
-        PlayerPrefs.SetFloat("MouseSensitivity", value);
     }
 
+    // --- CORREÇÃO PRINCIPAL AQUI TAMBÉM ---
     private void LoadSensitivity()
     {
-        float savedSens = PlayerPrefs.GetFloat("MouseSensitivity", 100f);
-        if (sensitivitySlider != null) sensitivitySlider.value = savedSens;
-        if (playerController != null) playerController.SetLookSensitivity(savedSens);
-        if (sensitivityValueText != null) sensitivityValueText.text = savedSens.ToString("F0");
+        float savedSens = PlayerPrefs.GetFloat("MouseSensitivity", 50f); // Padrão mais baixo e sensato
+
+        if (playerController != null)
+        {
+            // ANTES (ERRADO): playerController.rotationSpeed = savedSens;
+            // DEPOIS (CORRETO): Usa a mesma função pública para definir o valor inicial.
+            playerController.SetLookSensitivity(savedSens);
+        }
+
+        if (sensitivityInputField != null)
+        {
+            sensitivityInputField.text = savedSens.ToString(CultureInfo.InvariantCulture);
+        }
     }
 }

@@ -1,3 +1,4 @@
+// PlayerController.cs (Corrigido para FPS com Toque)
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -5,13 +6,16 @@ public class PlayerController : MonoBehaviour
 {
     [Header("Movimento e Rotação")]
     public float moveSpeed = 5f;
+    [Tooltip("Sensibilidade da rotação para mouse e toque.")]
+    public float lookSensitivity = 100f; // Esta é a variável que o menu de pause vai controlar
 
-    // --- MUDANÇA AQUI: Apenas uma variável para a sensibilidade ---
-    [Tooltip("Controla a sensibilidade da rotação da câmera (mouse e toque).")]
-    public float lookSensitivity = 100f;
+    // Removida a 'rotationSpeed' para evitar confusão.
 
-    // ... (O resto das suas variáveis permanece o mesmo) ...
+    // ... (O resto das suas variáveis continua igual) ...
     #region Variáveis Intactas
+    public float shootDistance = 100f;
+    public LayerMask shootableMask;
+
     [Header("Status do Jogador (usando float)")]
     public float maxHealth = 100f;
     public float currentHealth;
@@ -35,24 +39,13 @@ public class PlayerController : MonoBehaviour
     public WeaponStats currentWeapon;
     #endregion
 
-    private Rigidbody rb;
     private float cameraVerticalRotation = 0f;
 
     void Start()
     {
-        rb = GetComponent<Rigidbody>();
-        if (rb == null)
-        {
-            Debug.LogError("PlayerController precisa de um componente Rigidbody!", this.gameObject);
-            this.enabled = false;
-            return;
-        }
-
         playerCamera = GetComponentInChildren<Camera>();
-
         currentHealth = maxHealth;
         currentArmor = 0f;
-
         if (hudManager != null) { hudManager.UpdateStatus((int)currentHealth, (int)currentArmor); }
         if (playerCamera != null) { cameraDefaultPosition = playerCamera.transform.localPosition; }
     }
@@ -61,6 +54,7 @@ public class PlayerController : MonoBehaviour
     {
         if (InputManager.Instance == null) return;
 
+        // O Update agora cuida da ROTAÇÃO e do TIRO.
         HandleRotation();
         HandleShooting();
         HandleDebugInputs();
@@ -69,42 +63,47 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (InputManager.Instance == null) return;
+        // O FixedUpdate cuida do MOVIMENTO (física).
         HandleMovement();
     }
 
+    // --- LÓGICA DE ROTAÇÃO CORRIGIDA ---
     private void HandleRotation()
     {
-        // Usa a variável única 'lookSensitivity' para a rotação.
+        // 1. Rotação Horizontal (corpo do jogador)
+        // O jogador vira para os lados com o input de olhar (mouse ou toque).
         float lookX = InputManager.Instance.LookX * lookSensitivity * Time.deltaTime;
         transform.Rotate(Vector3.up * lookX);
 
+        // 2. Rotação Vertical (apenas a câmera)
+        // A câmera olha para cima e para baixo.
         cameraVerticalRotation -= InputManager.Instance.LookY * lookSensitivity * Time.deltaTime;
         cameraVerticalRotation = Mathf.Clamp(cameraVerticalRotation, -90f, 90f);
         playerCamera.transform.localRotation = Quaternion.Euler(cameraVerticalRotation, 0, 0);
     }
 
+    // --- LÓGICA DE MOVIMENTO CORRIGIDA ---
     private void HandleMovement()
     {
+        if (InputManager.Instance == null) return;
+
+        // O jogador se move para frente/trás/lados com o input de movimento (teclado ou joystick).
         float moveVertical = InputManager.Instance.VerticalAxis;
         float moveHorizontal = InputManager.Instance.HorizontalAxis;
 
         Vector3 moveDirection = (transform.forward * moveVertical) + (transform.right * moveHorizontal);
-
-        Vector3 targetVelocity = moveDirection.normalized * moveSpeed;
-        targetVelocity.y = rb.linearVelocity.y;
-        rb.linearVelocity = targetVelocity;
+        transform.position += moveDirection.normalized * moveSpeed * Time.fixedDeltaTime;
     }
 
-    // --- FUNÇÃO PÚBLICA CORRIGIDA E NO LUGAR CERTO ---
-    // Esta função permite que o PauseMenuController altere nossa variável lookSensitivity.
+    // --- FUNÇÃO PÚBLICA PARA O MENU DE PAUSE ---
+    // Esta função permite que o PauseMenuController altere a sensibilidade.
     public void SetLookSensitivity(float newSensitivity)
     {
         lookSensitivity = newSensitivity;
     }
 
-    // O resto das suas funções (HandleShooting, TakeDamage, etc.) permanecem 100% intactas.
-    #region Funções de Jogo (Intactas)
+    // ... (O resto das suas funções (HandleShooting, TakeDamage, etc.) permanecem intactas) ...
+    #region Funções Intactas
     private void HandleShooting()
     {
         if (InputManager.Instance.IsShooting)
@@ -112,13 +111,11 @@ public class PlayerController : MonoBehaviour
             Shoot();
         }
     }
-
     private void HandleDebugInputs()
     {
         if (Input.GetKeyDown(KeyCode.T)) { TakeDamage(10f); }
         if (Input.GetKeyDown(KeyCode.Y)) { AddArmor(25f); }
     }
-
     public void TakeDamage(float damage)
     {
         float damageToArmor = Mathf.Min(currentArmor, damage);
@@ -126,56 +123,37 @@ public class PlayerController : MonoBehaviour
         float remainingDamage = damage - damageToArmor;
         currentHealth -= remainingDamage;
         currentHealth = Mathf.Clamp(currentHealth, 0f, maxHealth);
-        Debug.Log($"Dano recebido! Vida: {currentHealth}, Armadura: {currentArmor}");
         UpdateHud();
-        if (hudManager != null) { hudManager.UpdateStatus((int)currentHealth, (int)currentArmor); }
         if (currentHealth <= 0) { Die(); }
     }
-
     public bool Heal(float amount)
     {
         if (currentHealth >= maxHealth) return false;
         currentHealth += amount;
         currentHealth = Mathf.Clamp(currentHealth, 0f, maxHealth);
-        Debug.Log($"Jogador curou {amount} de vida. Vida: {currentHealth}");
         UpdateHud();
-        if (hudManager != null) { hudManager.UpdateStatus((int)currentHealth, (int)currentArmor); }
         return true;
     }
-
     public bool AddArmor(float amount)
     {
         if (currentArmor >= maxArmor) return false;
         currentArmor += amount;
         currentArmor = Mathf.Clamp(currentArmor, 0f, maxArmor);
-        Debug.Log($"Jogador pegou {amount} de armadura. Armadura: {currentArmor}");
         UpdateHud();
-        if (hudManager != null) { hudManager.UpdateStatus((int)currentHealth, (int)currentArmor); }
         return true;
     }
-
     private void Shoot()
     {
-        if (currentWeapon != null)
-        {
-            currentWeapon.TryToShoot();
-        }
+        if (currentWeapon != null) { currentWeapon.TryToShoot(); }
     }
-
     private void Die()
     {
-        Debug.Log("O jogador morreu! Acionando o sistema de Game Over...");
         FindObjectOfType<GameOverTrigger>().TriggerGameOver();
     }
-
     private void UpdateHud()
     {
-        if (hudManager != null)
-        {
-            hudManager.UpdateStatus((int)currentHealth, (int)currentArmor);
-        }
+        if (hudManager != null) { hudManager.UpdateStatus((int)currentHealth, (int)currentArmor); }
     }
-
     private void HandleHeadBob()
     {
         if (!enableHeadBob) return;
@@ -186,20 +164,12 @@ public class PlayerController : MonoBehaviour
             walkingTime += Time.deltaTime;
             float horizontalOffset = Mathf.Cos(walkingTime * bobFrequency) * bobHorizontalAmplitude;
             float verticalOffset = Mathf.Sin(walkingTime * bobFrequency * 2) * bobVerticalAmplitude;
-            playerCamera.transform.localPosition = new Vector3(
-                cameraDefaultPosition.x + horizontalOffset,
-                cameraDefaultPosition.y + verticalOffset,
-                cameraDefaultPosition.z
-            );
+            playerCamera.transform.localPosition = new Vector3(cameraDefaultPosition.x + horizontalOffset, cameraDefaultPosition.y + verticalOffset, cameraDefaultPosition.z);
         }
         else
         {
             walkingTime = 0;
-            playerCamera.transform.localPosition = Vector3.Lerp(
-                playerCamera.transform.localPosition,
-                cameraDefaultPosition,
-                Time.deltaTime * 5f
-            );
+            playerCamera.transform.localPosition = Vector3.Lerp(playerCamera.transform.localPosition, cameraDefaultPosition, Time.deltaTime * 5f);
         }
     }
     #endregion
