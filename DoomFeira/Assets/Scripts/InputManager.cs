@@ -1,4 +1,4 @@
-// InputManager.cs (Com a Correção Final no Update)
+// InputManager.cs (Com a Correção Final do Toque)
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
@@ -41,32 +41,63 @@ public class InputManager : MonoBehaviour
         ApplyCurrentScheme();
     }
 
-    // --- A CORREÇÃO PRINCIPAL ESTÁ AQUI ---
     void Update()
     {
-        // Lógica de reset de input agora é separada por plataforma.
+        // A cada frame, simplesmente chamamos o método de leitura correto.
+        // A lógica de reset foi movida para dentro de ReadPCInput.
         if (currentScheme == ControlScheme.PC)
         {
-            // O mouse precisa ser resetado a cada frame.
-            LookX = 0;
-            LookY = 0;
             ReadPCInput();
         }
         else // Mobile
         {
-            // O toque é controlado por eventos (OnDrag, OnPointerUp), então não resetamos aqui.
-            // O TouchLookArea.cs vai chamar SetLookInput(Vector2.zero) quando o dedo for solto.
             ReadMobileInput();
         }
     }
 
+    // --- FUNÇÃO CORRIGIDA ---
+    // Agora o reset do LookX/Y acontece APENAS no PC.
+    private void ReadPCInput()
+    {
+        // 1. Reseta os valores do frame anterior.
+        LookX = 0;
+        LookY = 0;
+
+        // 2. Lê os novos valores.
+        VerticalAxis = Input.GetAxis("Vertical");
+        HorizontalAxis = Input.GetAxis("Horizontal");
+        IsShooting = Input.GetKey(KeyCode.Space);
+        LookX = Input.GetAxis("Mouse X");
+        LookY = Input.GetAxis("Mouse Y");
+    }
+
+    private void ReadMobileInput()
+    {
+        if (movementJoystick != null)
+        {
+            VerticalAxis = movementJoystick.Vertical;
+            HorizontalAxis = movementJoystick.Horizontal;
+        }
+        else { VerticalAxis = 0; HorizontalAxis = 0; }
+        // No mobile, NÃO resetamos LookX/LookY.
+        // Eles são definidos pelo TouchLookArea e zerados por ele no OnPointerUp.
+    }
+
+    // Esta função é chamada pelo TouchLookArea
+    public void SetLookInput(Vector2 delta)
+    {
+        LookX = delta.x;
+        LookY = delta.y;
+    }
+
+    // O resto do seu código InputManager permanece o mesmo.
+    #region Código Intacto
     public void SetControlScheme(int schemeIndex)
     {
         currentScheme = (ControlScheme)schemeIndex;
         PlayerPrefs.SetInt("ControlScheme", schemeIndex);
         ApplyCurrentScheme();
     }
-
     private void ApplyCurrentScheme()
     {
         bool isMobile = (currentScheme == ControlScheme.Mobile);
@@ -91,14 +122,6 @@ public class InputManager : MonoBehaviour
             Cursor.visible = isMobile;
         }
     }
-
-    public void SetLookInput(Vector2 delta)
-    {
-        LookX = delta.x;
-        LookY = delta.y;
-    }
-
-    #region Funções de UI, Tiro e Leitura de Input
     private void SetupMainMenuDropdown()
     {
         TMP_Dropdown dropdown = FindObjectOfType<TMP_Dropdown>();
@@ -128,23 +151,6 @@ public class InputManager : MonoBehaviour
         {
             IsShooting = isShooting;
         }
-    }
-    private void ReadPCInput()
-    {
-        VerticalAxis = Input.GetAxis("Vertical");
-        HorizontalAxis = Input.GetAxis("Horizontal");
-        IsShooting = Input.GetKey(KeyCode.Space);
-        LookX = Input.GetAxis("Mouse X");
-        LookY = Input.GetAxis("Mouse Y");
-    }
-    private void ReadMobileInput()
-    {
-        if (movementJoystick != null)
-        {
-            VerticalAxis = movementJoystick.Vertical;
-            HorizontalAxis = movementJoystick.Horizontal;
-        }
-        else { VerticalAxis = 0; HorizontalAxis = 0; }
     }
     #endregion
 }

@@ -1,4 +1,4 @@
-// PlayerController.cs (Corrigido para FPS com Toque)
+// PlayerController.cs (Refatorado para usar Rigidbody)
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -7,42 +7,48 @@ public class PlayerController : MonoBehaviour
     [Header("Movimento e Rotação")]
     public float moveSpeed = 5f;
     [Tooltip("Sensibilidade da rotação para mouse e toque.")]
-    public float lookSensitivity = 100f; // Esta é a variável que o menu de pause vai controlar
+    public float lookSensitivity = 100f;
 
-    // Removida a 'rotationSpeed' para evitar confusão.
-
-    // ... (O resto das suas variáveis continua igual) ...
+    // ... (Suas outras variáveis)
     #region Variáveis Intactas
     public float shootDistance = 100f;
     public LayerMask shootableMask;
-
     [Header("Status do Jogador (usando float)")]
     public float maxHealth = 100f;
     public float currentHealth;
     public float maxArmor = 100f;
     public float currentArmor;
-
     [Header("Componentes e HUD")]
     public HUDManager hudManager;
     private Camera playerCamera;
-
     [Header("Efeitos da Câmera (Head Bob)")]
     public bool enableHeadBob = true;
     public float bobFrequency = 2.0f;
     public float bobHorizontalAmplitude = 0.1f;
     public float bobVerticalAmplitude = 0.1f;
-
     private float walkingTime = 0.0f;
     private Vector3 cameraDefaultPosition;
-
     [Header("Equipamento")]
     public WeaponStats currentWeapon;
     #endregion
 
+    // --- NOVAS VARIÁVEIS PARA O RIGIDBODY ---
+    private Rigidbody rb;
     private float cameraVerticalRotation = 0f;
+    private Vector3 playerVelocity = Vector3.zero;
+    private float yRotation = 0f;
 
     void Start()
     {
+        // --- ADIÇÃO NO START ---
+        rb = GetComponent<Rigidbody>();
+        if (rb == null)
+        {
+            Debug.LogError("PlayerController precisa de um componente Rigidbody!", this.gameObject);
+            this.enabled = false;
+            return;
+        }
+
         playerCamera = GetComponentInChildren<Camera>();
         currentHealth = maxHealth;
         currentArmor = 0f;
@@ -54,62 +60,55 @@ public class PlayerController : MonoBehaviour
     {
         if (InputManager.Instance == null) return;
 
-        // O Update agora cuida da ROTAÇÃO e do TIRO.
-        HandleRotation();
+        // No Update, nós apenas lemos o input e guardamos nas nossas variáveis.
+        // A física será aplicada no FixedUpdate.
+        ReadAndStoreInput();
+
         HandleShooting();
         HandleDebugInputs();
         HandleHeadBob();
     }
 
-    void FixedUpdate()
+    // --- NOVA FUNÇÃO PARA ORGANIZAR O INPUT ---
+    private void ReadAndStoreInput()
     {
-        // O FixedUpdate cuida do MOVIMENTO (física).
-        HandleMovement();
-    }
+        // 1. Input de Movimento (para a física)
+        float moveVertical = InputManager.Instance.VerticalAxis;
+        float moveHorizontal = InputManager.Instance.HorizontalAxis;
+        Vector3 moveDirection = (transform.forward * moveVertical) + (transform.right * moveHorizontal);
+        playerVelocity = moveDirection.normalized * moveSpeed;
 
-    // --- LÓGICA DE ROTAÇÃO CORRIGIDA ---
-    private void HandleRotation()
-    {
-        // 1. Rotação Horizontal (corpo do jogador)
-        // O jogador vira para os lados com o input de olhar (mouse ou toque).
-        float lookX = InputManager.Instance.LookX * lookSensitivity * Time.deltaTime;
-        transform.Rotate(Vector3.up * lookX);
+        // 2. Input de Rotação (para a física)
+        yRotation = InputManager.Instance.LookX * lookSensitivity;
 
-        // 2. Rotação Vertical (apenas a câmera)
-        // A câmera olha para cima e para baixo.
+        // 3. Rotação Vertical da Câmera (pode ser feita aqui mesmo)
         cameraVerticalRotation -= InputManager.Instance.LookY * lookSensitivity * Time.deltaTime;
         cameraVerticalRotation = Mathf.Clamp(cameraVerticalRotation, -90f, 90f);
         playerCamera.transform.localRotation = Quaternion.Euler(cameraVerticalRotation, 0, 0);
     }
 
-    // --- LÓGICA DE MOVIMENTO CORRIGIDA ---
-    private void HandleMovement()
+    // O movimento e a rotação agora acontecem no FixedUpdate para serem consistentes com a física.
+    void FixedUpdate()
     {
-        if (InputManager.Instance == null) return;
+        // Aplica a rotação horizontal ao Rigidbody
+        rb.MoveRotation(rb.rotation * Quaternion.Euler(Vector3.up * yRotation * Time.fixedDeltaTime));
 
-        // O jogador se move para frente/trás/lados com o input de movimento (teclado ou joystick).
-        float moveVertical = InputManager.Instance.VerticalAxis;
-        float moveHorizontal = InputManager.Instance.HorizontalAxis;
-
-        Vector3 moveDirection = (transform.forward * moveVertical) + (transform.right * moveHorizontal);
-        transform.position += moveDirection.normalized * moveSpeed * Time.fixedDeltaTime;
+        // Aplica o movimento ao Rigidbody
+        rb.linearVelocity = new Vector3(playerVelocity.x, rb.linearVelocity.y, playerVelocity.z);
     }
 
-    // --- FUNÇÃO PÚBLICA PARA O MENU DE PAUSE ---
-    // Esta função permite que o PauseMenuController altere a sensibilidade.
+    // As funções HandleMovement e HandleRotation foram substituídas pela lógica acima.
+
     public void SetLookSensitivity(float newSensitivity)
     {
         lookSensitivity = newSensitivity;
     }
 
-    // ... (O resto das suas funções (HandleShooting, TakeDamage, etc.) permanecem intactas) ...
+    // O resto do código permanece 100% intacto.
     #region Funções Intactas
     private void HandleShooting()
     {
-        if (InputManager.Instance.IsShooting)
-        {
-            Shoot();
-        }
+        if (InputManager.Instance.IsShooting) { Shoot(); }
     }
     private void HandleDebugInputs()
     {
