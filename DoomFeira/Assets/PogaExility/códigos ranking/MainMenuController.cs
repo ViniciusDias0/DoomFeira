@@ -1,65 +1,90 @@
-// MainMenuController.cs (Sua versão, com a única alteração solicitada)
+// MainMenuController.cs (Sem o título "Hall of Fame")
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 using TMPro;
-using System.Text;
 using System.Threading.Tasks;
 
 public class MainMenuController : MonoBehaviour
 {
-    [Header("UI do Ranking")]
-    public TextMeshProUGUI rankingText;
+    [Header("UI")]
+    public TMP_Dropdown rankingDropdown;
 
     [Header("Configuração de Cenas")]
     public string gameSceneName = "SampleScene";
 
-    private void OnEnable()
+    private bool isRankingLoaded = false;
+
+    void Start()
     {
-        LoadRanking();
+        if (rankingDropdown == null)
+        {
+            Debug.LogError("Ranking Dropdown não foi definido no Inspector!");
+            return;
+        }
+
+        rankingDropdown.ClearOptions();
+        rankingDropdown.options.Add(new TMP_Dropdown.OptionData() { text = "VER RANKING" });
+        rankingDropdown.RefreshShownValue();
+
+        rankingDropdown.onValueChanged.AddListener(OnDropdownValueChanged);
     }
 
-    private async void LoadRanking()
+    public async void OnDropdownClicked()
     {
-        // Esta parte do código que garante a inicialização está ótima e não precisa de mudanças.
-        while (FirebaseManager.Instance == null)
-        {
-            await Task.Yield();
-        }
-        while (FirebaseManager.Instance.InitializationTask == null)
+        if (isRankingLoaded) return;
+
+        rankingDropdown.ClearOptions();
+        rankingDropdown.options.Add(new TMP_Dropdown.OptionData() { text = "Carregando..." });
+        rankingDropdown.RefreshShownValue();
+
+        await LoadRanking();
+    }
+
+    private async Task LoadRanking()
+    {
+        while (FirebaseManager.Instance == null || FirebaseManager.Instance.InitializationTask == null)
         {
             await Task.Yield();
         }
         await FirebaseManager.Instance.InitializationTask;
 
-        if (rankingText != null) rankingText.text = "CARREGANDO RANKING...";
-
         List<ScoreEntry> topScores = await FirebaseManager.Instance.GetTopScores();
 
-        Debug.Log($"MainMenuController: Foram encontrados {topScores.Count} recordes no Firebase.");
+        rankingDropdown.ClearOptions();
 
-        // --- A ÚNICA MUDANÇA ESTÁ AQUI ---
-        // Em vez de começar com o cabeçalho, o StringBuilder agora começa vazio.
-        StringBuilder sb = new StringBuilder("");
-
-        int count = Mathf.Min(topScores.Count, 10);
-
-        if (count == 0)
+        if (topScores.Count == 0)
         {
-            sb.Append("NENHUM RECORDE AINDA!");
+            rankingDropdown.options.Add(new TMP_Dropdown.OptionData("Nenhum recorde encontrado."));
         }
         else
         {
-            for (int i = 0; i < count; i++)
+            // --- ALTERAÇÃO AQUI: A linha que adicionava o título "HALL OF FAME" foi removida. ---
+
+            // Agora, o loop adiciona diretamente os recordes.
+            foreach (var scoreEntry in topScores)
             {
-                // A quebra de linha \n no final garante o espaçamento entre as linhas.
-                sb.AppendLine($"{(i + 1)}. {topScores[i].name}   {topScores[i].score}");
+                string entryText = $"{scoreEntry.name} - {scoreEntry.score}";
+                rankingDropdown.options.Add(new TMP_Dropdown.OptionData(entryText));
             }
         }
 
-        if (rankingText != null)
+        rankingDropdown.RefreshShownValue();
+        isRankingLoaded = true;
+    }
+
+    private void OnDropdownValueChanged(int index)
+    {
+        // Esta lógica ainda é útil. Se o jogador selecionar um item,
+        // o dropdown "fecha" visualmente, mostrando o texto inicial.
+        // Para fazer isso, precisamos adicionar o texto inicial de volta.
+        if (index >= 0) // Qualquer seleção
         {
-            rankingText.text = sb.ToString();
+            // Limpa a lista de ranking e adiciona o texto inicial de volta
+            rankingDropdown.ClearOptions();
+            rankingDropdown.options.Add(new TMP_Dropdown.OptionData() { text = "VER RANKING" });
+            rankingDropdown.SetValueWithoutNotify(0); // Mostra o texto "VER RANKING"
+            isRankingLoaded = false; // Permite que o ranking seja recarregado da próxima vez
         }
     }
 
@@ -67,7 +92,6 @@ public class MainMenuController : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            Debug.Log($"Carregando cena: {gameSceneName}");
             SceneManager.LoadScene(gameSceneName);
         }
     }
