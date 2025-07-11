@@ -1,16 +1,17 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-// A linha abaixo pode ser removida se você não a estiver usando mais.
-// using UnityEngine.Experimental.Rendering;
-
 public class PlayerController : MonoBehaviour
 {
-    [Header("Movimento e Tiro")]
+    [Header("Movimento e Rotação")]
     public float moveSpeed = 5f;
-    public float rotationSpeed = 100f;
 
-    // ... Suas outras variáveis (status, HUD, etc.) permanecem as mesmas ...
+    // --- MUDANÇA AQUI: Apenas uma variável para a sensibilidade ---
+    [Tooltip("Controla a sensibilidade da rotação da câmera (mouse e toque).")]
+    public float lookSensitivity = 100f;
+
+    // ... (O resto das suas variáveis permanece o mesmo) ...
+    #region Variáveis Intactas
     [Header("Status do Jogador (usando float)")]
     public float maxHealth = 100f;
     public float currentHealth;
@@ -32,82 +33,78 @@ public class PlayerController : MonoBehaviour
 
     [Header("Equipamento")]
     public WeaponStats currentWeapon;
+    #endregion
 
-    // --- ADIÇÃO CRUCIAL ---
     private Rigidbody rb;
-    // --- FIM DA ADIÇÃO ---
-
+    private float cameraVerticalRotation = 0f;
 
     void Start()
     {
-        // --- ADIÇÃO CRUCIAL ---
-        // Pega o componente Rigidbody no mesmo objeto
         rb = GetComponent<Rigidbody>();
         if (rb == null)
         {
-            Debug.LogError("PlayerController precisa de um componente Rigidbody para funcionar!", this.gameObject);
+            Debug.LogError("PlayerController precisa de um componente Rigidbody!", this.gameObject);
             this.enabled = false;
             return;
         }
-        // --- FIM DA ADIÇÃO ---
 
         playerCamera = GetComponentInChildren<Camera>();
-
-        // A lógica do cursor é controlada pelo InputManager, então podemos remover isso daqui.
-        // Cursor.lockState = CursorLockMode.Locked;
-        // Cursor.visible = false;
 
         currentHealth = maxHealth;
         currentArmor = 0f;
 
-        if (hudManager != null)
-        {
-            hudManager.UpdateStatus((int)currentHealth, (int)currentArmor);
-        }
-
-        if (playerCamera != null)
-        {
-            cameraDefaultPosition = playerCamera.transform.localPosition;
-        }
+        if (hudManager != null) { hudManager.UpdateStatus((int)currentHealth, (int)currentArmor); }
+        if (playerCamera != null) { cameraDefaultPosition = playerCamera.transform.localPosition; }
     }
 
     void Update()
     {
         if (InputManager.Instance == null) return;
 
-        // A lógica de tiro e efeitos visuais permanece em Update()
+        HandleRotation();
         HandleShooting();
         HandleDebugInputs();
         HandleHeadBob();
     }
 
-    // --- NOVA FUNÇÃO E LÓGICA DE MOVIMENTO ---
-    // FixedUpdate é chamada em um intervalo de tempo fixo, ideal para física.
     void FixedUpdate()
     {
         if (InputManager.Instance == null) return;
+        HandleMovement();
+    }
 
-        // Pega os inputs diretamente do InputManager.
+    private void HandleRotation()
+    {
+        // Usa a variável única 'lookSensitivity' para a rotação.
+        float lookX = InputManager.Instance.LookX * lookSensitivity * Time.deltaTime;
+        transform.Rotate(Vector3.up * lookX);
+
+        cameraVerticalRotation -= InputManager.Instance.LookY * lookSensitivity * Time.deltaTime;
+        cameraVerticalRotation = Mathf.Clamp(cameraVerticalRotation, -90f, 90f);
+        playerCamera.transform.localRotation = Quaternion.Euler(cameraVerticalRotation, 0, 0);
+    }
+
+    private void HandleMovement()
+    {
         float moveVertical = InputManager.Instance.VerticalAxis;
-        float rotationHorizontal = InputManager.Instance.HorizontalAxis; // <<-- A rotação SEMPRE virá daqui agora.
+        float moveHorizontal = InputManager.Instance.HorizontalAxis;
 
-        // --- LÓGICA DE MOVIMENTO E ROTAÇÃO CORRIGIDA PARA O ESTILO DOOM ---
+        Vector3 moveDirection = (transform.forward * moveVertical) + (transform.right * moveHorizontal);
 
-        // ROTAÇÃO:
-        // Usa o input horizontal (Setas Esquerda/Direita ou joystick) para girar o jogador.
-        Quaternion deltaRotation = Quaternion.Euler(Vector3.up * rotationHorizontal * rotationSpeed * Time.fixedDeltaTime);
-        rb.MoveRotation(rb.rotation * deltaRotation);
-
-        // MOVIMENTO PARA FRENTE/TRÁS:
-        // Usa o input vertical (Setas Cima/Baixo ou joystick) para mover para frente e para trás.
-        Vector3 targetVelocity = transform.forward * moveVertical * moveSpeed;
-        targetVelocity.y = rb.linearVelocity.y; // Mantém a velocidade vertical atual (gravidade).
+        Vector3 targetVelocity = moveDirection.normalized * moveSpeed;
+        targetVelocity.y = rb.linearVelocity.y;
         rb.linearVelocity = targetVelocity;
     }
-    // --- FIM DA NOVA LÓGICA DE MOVIMENTO ---
 
-    // A sua função HandleMovement() antiga pode ser DELETADA, pois foi substituída por FixedUpdate.
+    // --- FUNÇÃO PÚBLICA CORRIGIDA E NO LUGAR CERTO ---
+    // Esta função permite que o PauseMenuController altere nossa variável lookSensitivity.
+    public void SetLookSensitivity(float newSensitivity)
+    {
+        lookSensitivity = newSensitivity;
+    }
 
+    // O resto das suas funções (HandleShooting, TakeDamage, etc.) permanecem 100% intactas.
+    #region Funções de Jogo (Intactas)
     private void HandleShooting()
     {
         if (InputManager.Instance.IsShooting)
@@ -116,18 +113,10 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-
     private void HandleDebugInputs()
     {
-        if (Input.GetKeyDown(KeyCode.T))
-        {
-            TakeDamage(10f);
-        }
-
-        if (Input.GetKeyDown(KeyCode.Y))
-        {
-            AddArmor(25f);
-        }
+        if (Input.GetKeyDown(KeyCode.T)) { TakeDamage(10f); }
+        if (Input.GetKeyDown(KeyCode.Y)) { AddArmor(25f); }
     }
 
     public void TakeDamage(float damage)
@@ -139,14 +128,8 @@ public class PlayerController : MonoBehaviour
         currentHealth = Mathf.Clamp(currentHealth, 0f, maxHealth);
         Debug.Log($"Dano recebido! Vida: {currentHealth}, Armadura: {currentArmor}");
         UpdateHud();
-        if (hudManager != null)
-        {
-            hudManager.UpdateStatus((int)currentHealth, (int)currentArmor);
-        }
-        if (currentHealth <= 0)
-        {
-            Die();
-        }
+        if (hudManager != null) { hudManager.UpdateStatus((int)currentHealth, (int)currentArmor); }
+        if (currentHealth <= 0) { Die(); }
     }
 
     public bool Heal(float amount)
@@ -196,10 +179,8 @@ public class PlayerController : MonoBehaviour
     private void HandleHeadBob()
     {
         if (!enableHeadBob) return;
-
         float horizontalInput = InputManager.Instance.HorizontalAxis;
         float verticalInput = InputManager.Instance.VerticalAxis;
-
         if (Mathf.Abs(horizontalInput) > 0.1f || Mathf.Abs(verticalInput) > 0.1f)
         {
             walkingTime += Time.deltaTime;
@@ -221,4 +202,5 @@ public class PlayerController : MonoBehaviour
             );
         }
     }
+    #endregion
 }
